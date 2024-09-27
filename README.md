@@ -9,3 +9,4 @@ Recreation of ATARI Tempest using Raylib and Python3 bindings.
 - https://arcarc.xmission.com/Web%20Archives/ionpool.net%20(Dec-31-2020)/arcade/tempest_code_project/tempest_code_project.html Tempest Code Project.
 - https://arcarc.xmission.com/Web%20Archives/ionpool.net%20(Dec-31-2020)/arcade/tempest_code_project/TempEd/tubes/tubes.html TempED level editor.
 - https://flyers.arcade-museum.com/videogames/show/1127#gallery-3 ATARI Tempest poster.
+- https://github.com/Guendeli/basic-tempest basic-tempest BMX code.

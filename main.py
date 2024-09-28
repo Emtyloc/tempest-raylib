@@ -49,7 +49,6 @@ def draw_world(level_data: LevelData):
 
 
 def main():
-
     
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
     set_target_fps(TARGET_FPS)
@@ -66,6 +65,13 @@ def main():
 
     world_idx = 0
     worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
+    
+    gloom_shader = load_shader("0", "shaders/glsl330/bloom.fs");
+    
+    set_shader_value(gloom_shader, get_shader_location_attrib(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT), ShaderUniformDataType.SHADER_UNIFORM_VEC2)
+
+    render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
+
     # Main game loop
     while not window_should_close():
         # LOOP SETTINGS BEFORE START THE RENDERING - BEGIN_DRAWING
@@ -82,13 +88,20 @@ def main():
                 world_idx-=1
         
         begin_drawing()
+
+        begin_texture_mode(render_texture)
         clear_background(BLACK)
-        draw_fps(0, 0)
         # camera.rotation+=0.1
         begin_mode_2d(camera)
         draw_circle(int(screen_center.x), int(screen_center.y), 1, GREEN)
         draw_world(worlds[world_idx])
         end_mode_2d()
+        end_texture_mode()
+
+        begin_shader_mode(gloom_shader) 
+        draw_texture_rec(render_texture.texture, Rectangle(0,0, render_texture.texture.width, -render_texture.texture.height),Vector2(0,0), WHITE)
+        end_shader_mode()
+        draw_fps(0, 0)
         end_drawing()
 
     close_window()

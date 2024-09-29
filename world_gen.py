@@ -8,7 +8,7 @@ screen_center = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
 
 def circle():
-    radius_px = 210
+    radius_px = 250
     center = screen_center
 
     xs = []
@@ -28,8 +28,8 @@ def square():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a] * 100) + screen_center.x
-        y = int(stepsy[a] * 100) + screen_center.y
+        x = int(-stepsx[a] * 125) + screen_center.x
+        y = int(stepsy[a] * 125) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -42,8 +42,8 @@ def plus():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a] * 100) + screen_center.x
-        y = int(stepsy[a] * 100) + screen_center.y
+        x = int(-stepsx[a] * 125) + screen_center.x
+        y = int(stepsy[a] * 125) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -71,8 +71,8 @@ def cross():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a] * 30) + screen_center.x
-        y = int(-stepsy[a] * 30) + screen_center.y
+        x = int(-stepsx[a] * 40) + screen_center.x
+        y = int(-stepsy[a] * 40) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -85,8 +85,8 @@ def triangle():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a] * 35) + screen_center.x
-        y = int(stepsy[a] * 28) + screen_center.y
+        x = int(-stepsx[a] * 40) + screen_center.x
+        y = int(stepsy[a] * 33) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -99,8 +99,8 @@ def clover():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a] * 100) + screen_center.x
-        y = int(stepsy[a] * 100) + screen_center.y
+        x = int(-stepsx[a] * 125) + screen_center.x
+        y = int(stepsy[a] * 125) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -114,7 +114,7 @@ def vee():
     ys = []
     for a in range(16):
         x = int(stepsx[a] * 30) + screen_center.x
-        y = int(-stepsy[a] * 55) + screen_center.y
+        y = int(-stepsy[a] * 65) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -128,7 +128,7 @@ def steps():
     ys = []
     for a in range(16):
         x = int(stepsx[a] * 40) + screen_center.x
-        y = int(stepsy[a] * 36) + screen_center.y
+        y = int(stepsy[a] * 45) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -141,8 +141,8 @@ def u_shape():
     xs = []
     ys = []
     for a in range(16):
-        x = int(stepsx[a] * 30) + screen_center.x
-        y = int(stepsy[a] * 35) + screen_center.y
+        x = int(stepsx[a] * 35) + screen_center.x
+        y = int(stepsy[a] * 45) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -153,7 +153,7 @@ def line():
     xs = []
     ys = []
     for _ in range(16):
-        x = int(-xp*40) + screen_center.x
+        x = int(-xp*39) + screen_center.x
         y = 160 + screen_center.y
         xp+=1
         xs.append(x)
@@ -168,8 +168,8 @@ def heart():
     xs = []
     ys = []
     for a in range(16):
-        x = int(stepsx[a]*30) + screen_center.x
-        y = int(-stepsy[a]*30) + screen_center.y
+        x = int(stepsx[a]*40) + screen_center.x
+        y = int(-stepsy[a]*35) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -182,8 +182,8 @@ def star():
     xs = []
     ys = []
     for a in range(16):
-        x = int(-stepsx[a]*80) + screen_center.x
-        y = int(stepsy[a]*100) + screen_center.y
+        x = int(-stepsx[a]*90) + screen_center.x
+        y = int(stepsy[a]*110) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -212,7 +212,7 @@ def broken_v():
     ys = []
     for a in range(16):
         x = int(-stepsx[a]*35) + screen_center.x
-        y = int(-stepsy[a]*30) + screen_center.y
+        y = int(-stepsy[a]*35) + screen_center.y
         xs.append(x)
         ys.append(y)
     print(xs)
@@ -237,13 +237,13 @@ def infinity():
 def main():
     # circle()
     # square()
-    # cross()
+    # plus()
     # peanut()
     # cross()
     # triangle()
     # clover()
     # vee()
-    # steps()
+    steps()
     # u_shape()
     # line()
     # heart()

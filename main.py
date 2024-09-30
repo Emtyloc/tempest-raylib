@@ -1,25 +1,11 @@
 from pyray import *
 from raylib import ffi
-from worlds import *
-from enum import Enum
+from src.worlds import *
+from src.level import Level
+from src.utils import vector2_center_scale
+from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS, LEVEL
+from src.entities import Blaster
 import os
-
-
-#SETTINGS
-SCREEN_WIDTH: int = 600
-SCREEN_HEIGHT: int = 800
-TARGET_FPS = 60
-SCREEN_CENTER = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-
-
-class TempestColors(Enum):
-    BLUE_NEON = Color(31, 81, 255, 255)
-    RED_NEON = Color(255, 49, 49, 255)
-    GREEN_NEON = Color(15, 255, 80, 255)
-    YELLOW_NEON = Color(223, 255, 0, 255)
-    TURQUOISE_NEON = Color(64, 224, 208, 255)
-    PURPLE_NEON = Color(191, 64, 191, 255)
-    WHITE_NEON = RAYWHITE
 
 
 def draw_world(level_data: LevelData, color: TempestColors):
@@ -27,21 +13,21 @@ def draw_world(level_data: LevelData, color: TempestColors):
     PROYECTION_SCALE = 0.12 # Scale original level figure to make proyection figure
     for i in range(16):
         # Draw points around junctions
-        draw_circle(int(level_data.x[i]), int(level_data.y[i]), 2, color.value)
+        draw_circle(int(level_data.x[i]), int(level_data.y[i]), 2, color.rgba())
         # Draw section lines between Border and scaled Proyection
         border_vec = Vector2(level_data.x[i],level_data.y[i])
         center_scaled = vector2_center_scale(border_vec, SCREEN_CENTER, PROYECTION_SCALE)
         proyection_vec = Vector2(center_scaled.x, center_scaled.y + level_data.y3d)
         
         # Draw point around proyection junctions 
-        draw_circle(int(proyection_vec.x), int(proyection_vec.y), 1, color.value)
+        draw_circle(int(proyection_vec.x), int(proyection_vec.y), 1, color.rgba())
 
-        draw_line_ex(border_vec, proyection_vec, 2, color.value)
+        draw_line_ex(border_vec, proyection_vec, 2, color.rgba())
         if i > 0:
             # Border lines
             current_vec = Vector2(level_data.x[i], level_data.y[i])
             previous_vec = Vector2(level_data.x[i-1], level_data.y[i-1])
-            draw_line_ex(current_vec, previous_vec, 2, color.value)
+            draw_line_ex(current_vec, previous_vec, 2, color.rgba())
             
             # Proyection lines
             current_scaled = vector2_center_scale(current_vec, SCREEN_CENTER, PROYECTION_SCALE)
@@ -50,10 +36,10 @@ def draw_world(level_data: LevelData, color: TempestColors):
             previous_scaled = vector2_center_scale(previous_vec, SCREEN_CENTER, PROYECTION_SCALE)
             previous_proyection = Vector2(previous_scaled.x, previous_scaled.y + level_data.y3d)
 
-            draw_line_ex(current_proyection, previous_proyection, 1, color.value)
+            draw_line_ex(current_proyection, previous_proyection, 1, color.rgba())
 
     else:
-        if not level_data.open_state:
+        if level_data.is_loop:
             # Last border
             current_vec = Vector2(level_data.x[0],level_data.y[0])
             last_vec = Vector2(level_data.x[-1], level_data.y[-1])
@@ -69,55 +55,7 @@ def draw_world(level_data: LevelData, color: TempestColors):
             draw_line_ex(current_proyection, last_proyection, 1, color.value)
 
 
-class Blaster:
-    """
-    Player's shooter.
-    """
-    def __init__(self, edge_idx: int) -> None:
-        self.edge_idx = edge_idx
-        self._init_defaults()
-    
-    def _init_defaults(self) -> None:
-        self.shoot_timer = 3
-        self.men = 3
-        self.edge_pos = 0.5
-    
-    @property
-    def edge_idx(self):
-        return self._edge_idx
-    
-    @edge_idx.setter
-    def edge_idx(self, value: int):
-        if value < 0 or value > 15:
-            raise ValueError("Edge index cannot be less than 0 or greater than 15.")
-        self._edge_idx = value
-
-    
-    def shift_left(self):
-        # TODO: play movement sound
-        pass
-
-
-
-
-
-
-
-def vector2_center_scale(vector: Vector2, center: Vector2, scale_factor: float) -> Vector2:
-    """
-    Scale vector using center reference(vector) by scale factor.
-    """
-    offset_vector = vector2_subtract(vector, center) #traslation
-    scaled_offset = vector2_scale(offset_vector, scale_factor) 
-    scaled_vector = vector2_add(center, scaled_offset)
-    return scaled_vector
-
-
-
-
 def main():
-
-    blaster = Blaster(15)
     
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
     set_target_fps(TARGET_FPS)
@@ -140,25 +78,32 @@ def main():
     gloom_shader = load_shader("0", shader_path);
 
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
-    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 5.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
-    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.8) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
+    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 11.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
+    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
 
 
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+    blaster = Blaster()
+
     # Main game loop
     while not window_should_close():
         # LOOP SETTINGS BEFORE START THE RENDERING - BEGIN_DRAWING
 
-        if is_key_pressed(KeyboardKey.KEY_RIGHT):
+        if is_key_pressed(KeyboardKey.KEY_D):
             if world_idx == len(worlds) - 1:
                 world_idx = 0
             else:
                 world_idx+=1
-        elif is_key_pressed(KeyboardKey.KEY_LEFT):
+        elif is_key_pressed(KeyboardKey.KEY_A):
             if world_idx == 0:
                 world_idx = len(worlds) - 1
             else:
                 world_idx-=1
+        
+        LEVEL.world = worlds[world_idx]
+
+        blaster.update()
         
         begin_drawing()
 
@@ -167,13 +112,15 @@ def main():
         # camera.rotation+=0.1
         begin_mode_2d(camera)
         # draw_circle(int(SCREEN_CENTER.x), int(SCREEN_CENTER.y), 1, GREEN)
-        draw_world(worlds[world_idx], TempestColors.BLUE_NEON)
+        draw_world(LEVEL.world, TempestColors.BLUE_NEON)
+        blaster.draw()
         end_mode_2d()
         end_texture_mode()
 
         begin_shader_mode(gloom_shader) 
         draw_texture_rec(render_texture.texture, Rectangle(0,0, render_texture.texture.width, -render_texture.texture.height),Vector2(0,0), WHITE)
         end_shader_mode()
+
         draw_fps(0, 0)
         end_drawing()
 

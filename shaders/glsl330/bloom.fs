@@ -25,7 +25,7 @@ void main()
     // Texel color fetching from texture sampler
     vec4 source = texture(texture0, fragTexCoord);
 
-    const int range = 2;            // should be = (samples - 1)/2;
+    int range = int((samples - 1) / 2.0);           // should be = (samples - 1)/2;
 
     for (int x = -range; x <= range; x++)
     {

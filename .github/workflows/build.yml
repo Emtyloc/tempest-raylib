@@ -36,6 +36,7 @@ jobs:
         with:
           nuitka-version: main
           script-name: main.py
+          windows-icon-from-ico: icon.png
           onefile: true
           include-data-dir: shaders=shaders
           windows-console-mode: disable

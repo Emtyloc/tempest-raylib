@@ -11,6 +11,7 @@ SCREEN_HEIGHT: int = 800
 TARGET_FPS = 60
 SCREEN_CENTER = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
+
 class TempestColors(Enum):
     BLUE_NEON = Color(31, 81, 255, 255)
     RED_NEON = Color(255, 49, 49, 255)
@@ -68,6 +69,40 @@ def draw_world(level_data: LevelData, color: TempestColors):
             draw_line_ex(current_proyection, last_proyection, 1, color.value)
 
 
+class Blaster:
+    """
+    Player's shooter.
+    """
+    def __init__(self, edge_idx: int) -> None:
+        self.edge_idx = edge_idx
+        self._init_defaults()
+    
+    def _init_defaults(self) -> None:
+        self.shoot_timer = 3
+        self.men = 3
+        self.edge_pos = 0.5
+    
+    @property
+    def edge_idx(self):
+        return self._edge_idx
+    
+    @edge_idx.setter
+    def edge_idx(self, value: int):
+        if value < 0 or value > 15:
+            raise ValueError("Edge index cannot be less than 0 or greater than 15.")
+        self._edge_idx = value
+
+    
+    def shift_left(self):
+        # TODO: play movement sound
+        pass
+
+
+
+
+
+
+
 def vector2_center_scale(vector: Vector2, center: Vector2, scale_factor: float) -> Vector2:
     """
     Scale vector using center reference(vector) by scale factor.
@@ -78,11 +113,11 @@ def vector2_center_scale(vector: Vector2, center: Vector2, scale_factor: float) 
     return scaled_vector
 
 
-def make_vec_proyection_y3d():
-    pass
 
 
 def main():
+
+    blaster = Blaster(15)
     
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
     set_target_fps(TARGET_FPS)
@@ -100,6 +135,7 @@ def main():
     world_idx = 0
     worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
     
+    # Its important to use os.path with dirname(__file__) to make files reachables from .exe/.bin builds.
     shader_path = os.path.join(os.path.dirname(__file__), "shaders/glsl330/bloom.fs")
     gloom_shader = load_shader("0", shader_path);
 
@@ -130,7 +166,7 @@ def main():
         clear_background(BLACK)
         # camera.rotation+=0.1
         begin_mode_2d(camera)
-        draw_circle(int(SCREEN_CENTER.x), int(SCREEN_CENTER.y), 1, GREEN)
+        # draw_circle(int(SCREEN_CENTER.x), int(SCREEN_CENTER.y), 1, GREEN)
         draw_world(worlds[world_idx], TempestColors.BLUE_NEON)
         end_mode_2d()
         end_texture_mode()

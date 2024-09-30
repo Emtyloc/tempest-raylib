@@ -35,7 +35,7 @@ jobs:
         uses: Nuitka/Nuitka-Action@main
         with:
           nuitka-version: main
-          script-name: kasa_cli
+          script-name: main.py
           onefile: true
 
       - name: Upload Artifacts

@@ -1,30 +1,45 @@
 from pyray import *
 from raylib import ffi
 from worlds import *
+from enum import Enum
+
+
 #SETTINGS
 SCREEN_WIDTH: int = 600
 SCREEN_HEIGHT: int = 800
 TARGET_FPS = 60
 SCREEN_CENTER = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
+class TempestColors(Enum):
+    BLUE_NEON = Color(31, 81, 255, 255)
+    RED_NEON = Color(255, 49, 49, 255)
+    GREEN_NEON = Color(15, 255, 80, 255)
+    YELLOW_NEON = Color(223, 255, 0, 255)
+    TURQUOISE_NEON = Color(64, 224, 208, 255)
+    PURPLE_NEON = Color(191, 64, 191, 255)
+    WHITE_NEON = RAYWHITE
 
 
-def draw_world(level_data: LevelData):
-    TEMPEST_BLUE = Color(85, 108, 255, 255)
+def draw_world(level_data: LevelData, color: TempestColors):
+
     PROYECTION_SCALE = 0.12 # Scale original level figure to make proyection figure
     for i in range(16):
-        # Draw points arround junctions
-        draw_circle(int(level_data.x[i]), int(level_data.y[i]), 2, TEMPEST_BLUE)
+        # Draw points around junctions
+        draw_circle(int(level_data.x[i]), int(level_data.y[i]), 2, color.value)
         # Draw section lines between Border and scaled Proyection
         border_vec = Vector2(level_data.x[i],level_data.y[i])
         center_scaled = vector2_center_scale(border_vec, SCREEN_CENTER, PROYECTION_SCALE)
         proyection_vec = Vector2(center_scaled.x, center_scaled.y + level_data.y3d)
-        draw_line_ex(border_vec, proyection_vec, 2, TEMPEST_BLUE)
+        
+        # Draw point around proyection junctions 
+        draw_circle(int(proyection_vec.x), int(proyection_vec.y), 1, color.value)
+
+        draw_line_ex(border_vec, proyection_vec, 2, color.value)
         if i > 0:
             # Border lines
             current_vec = Vector2(level_data.x[i], level_data.y[i])
             previous_vec = Vector2(level_data.x[i-1], level_data.y[i-1])
-            draw_line_ex(current_vec, previous_vec, 2, TEMPEST_BLUE)
+            draw_line_ex(current_vec, previous_vec, 2, color.value)
             
             # Proyection lines
             current_scaled = vector2_center_scale(current_vec, SCREEN_CENTER, PROYECTION_SCALE)
@@ -33,14 +48,14 @@ def draw_world(level_data: LevelData):
             previous_scaled = vector2_center_scale(previous_vec, SCREEN_CENTER, PROYECTION_SCALE)
             previous_proyection = Vector2(previous_scaled.x, previous_scaled.y + level_data.y3d)
 
-            draw_line_ex(current_proyection, previous_proyection, 1, TEMPEST_BLUE)
+            draw_line_ex(current_proyection, previous_proyection, 1, color.value)
 
     else:
         if not level_data.open_state:
             # Last border
             current_vec = Vector2(level_data.x[0],level_data.y[0])
             last_vec = Vector2(level_data.x[-1], level_data.y[-1])
-            draw_line_ex(current_vec, last_vec, 2, TEMPEST_BLUE)
+            draw_line_ex(current_vec, last_vec, 2, color.value)
 
             # Last proyection border
             current_scale = vector2_center_scale(current_vec, SCREEN_CENTER, PROYECTION_SCALE)
@@ -49,10 +64,8 @@ def draw_world(level_data: LevelData):
             last_scale = vector2_center_scale(last_vec, SCREEN_CENTER, PROYECTION_SCALE)
             last_proyection = Vector2(last_scale.x, last_scale.y + level_data.y3d)
 
-            draw_line_ex(current_proyection, last_proyection, 1, TEMPEST_BLUE)
+            draw_line_ex(current_proyection, last_proyection, 1, color.value)
 
-
-    draw_circle(int(SCREEN_CENTER.x), int(SCREEN_CENTER.y + level_data.y3d), 1, PURPLE)
 
 def vector2_center_scale(vector: Vector2, center: Vector2, scale_factor: float) -> Vector2:
     """
@@ -90,11 +103,10 @@ def main():
 
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 5.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
-    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.7) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
+    set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.8) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
 
 
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
-
     # Main game loop
     while not window_should_close():
         # LOOP SETTINGS BEFORE START THE RENDERING - BEGIN_DRAWING
@@ -117,7 +129,7 @@ def main():
         # camera.rotation+=0.1
         begin_mode_2d(camera)
         draw_circle(int(SCREEN_CENTER.x), int(SCREEN_CENTER.y), 1, GREEN)
-        draw_world(worlds[world_idx])
+        draw_world(worlds[world_idx], TempestColors.BLUE_NEON)
         end_mode_2d()
         end_texture_mode()
 

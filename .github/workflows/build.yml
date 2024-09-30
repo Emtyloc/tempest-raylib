@@ -36,7 +36,7 @@ jobs:
         with:
           nuitka-version: main
           script-name: main.py
-        #   onefile: true
+          onefile: false
           include-data-dir: shaders=shaders
         #   windows-console-mode: disable
 

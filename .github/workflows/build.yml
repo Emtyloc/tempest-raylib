@@ -47,4 +47,5 @@ jobs:
           path: |
             build/*.exe
             build/*.bin
+            build/shaders/**/*.fs
             build/*.app/**/*

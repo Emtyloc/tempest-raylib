@@ -2,7 +2,7 @@ from pyray import *
 from raylib import ffi
 from worlds import *
 from enum import Enum
-from pathlib import Path
+import os
 
 
 #SETTINGS
@@ -100,7 +100,8 @@ def main():
     world_idx = 0
     worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
     
-    gloom_shader = load_shader("0", str(Path("shaders/glsl330/bloom.fs")));
+    shader_path = os.path.join(os.path.dirname(__file__), "shaders/glsl330/bloom.fs")
+    gloom_shader = load_shader("0", shader_path);
 
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 5.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)

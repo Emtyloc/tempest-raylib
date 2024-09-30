@@ -2,7 +2,6 @@ from pyray import *
 from raylib import ffi
 from worlds import *
 from enum import Enum
-import os, sys
 
 
 #SETTINGS
@@ -82,13 +81,6 @@ def make_vec_proyection_y3d():
     pass
 
 
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller/Nuitka """
-    if hasattr(sys, '_MEIPASS'):
-        # Si está empaquetado en un solo archivo, usa el directorio temporal
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
 def main():
     
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
@@ -107,7 +99,7 @@ def main():
     world_idx = 0
     worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
     
-    gloom_shader = load_shader("0", resource_path("shaders/glsl330/bloom.fs"));
+    gloom_shader = load_shader("0", "shaders/glsl330/bloom.fs");
 
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 5.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
@@ -147,6 +139,8 @@ def main():
         draw_fps(0, 0)
         end_drawing()
 
+    unload_shader(gloom_shader)
+    unload_render_texture(render_texture)
     close_window()
 
 

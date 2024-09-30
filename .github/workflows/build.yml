@@ -36,9 +36,9 @@ jobs:
         with:
           nuitka-version: main
           script-name: main.py
-          onefile: true
+        #   onefile: true
           include-data-dir: shaders=shaders
-          windows-console-mode: disable
+        #   windows-console-mode: disable
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3

@@ -10,19 +10,13 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check-out repository
         uses: actions/checkout@v4
-    
-      - name: Install dependencies on macOS
-        if: runner.os == 'macOS'
-        run: |
-            brew install gettext
-            brew link --force gettext
 
       - name: Setup Python
         uses: actions/setup-python@v5

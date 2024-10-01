@@ -21,7 +21,7 @@ class Level:
         self.has_pulsars = False
     
     @property
-    def world(self):
+    def world(self) -> LevelData:
         return self._world
 
     @world.setter

@@ -84,8 +84,8 @@ def main():
 
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
+    LEVEL.world = worlds[world_idx]
     blaster = Blaster()
-
     # Main game loop
     while not window_should_close():
         # LOOP SETTINGS BEFORE START THE RENDERING - BEGIN_DRAWING
@@ -95,13 +95,16 @@ def main():
                 world_idx = 0
             else:
                 world_idx+=1
+            LEVEL.world = worlds[world_idx]
+            blaster.border_idx = LEVEL.world.start_idx
         elif is_key_pressed(KeyboardKey.KEY_A):
             if world_idx == 0:
                 world_idx = len(worlds) - 1
             else:
                 world_idx-=1
-        
-        LEVEL.world = worlds[world_idx]
+            LEVEL.world = worlds[world_idx]
+            blaster.border_idx = LEVEL.world.start_idx
+                
 
         blaster.update()
         

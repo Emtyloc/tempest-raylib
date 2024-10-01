@@ -9,7 +9,7 @@ class Blaster:
         self._init_defaults()
     
     def _init_defaults(self) -> None:
-        self.border_idx = 0
+        self.border_idx = LEVEL.world.start_idx
 
     
     @property
@@ -65,7 +65,7 @@ class Blaster:
 
 
         current_pos = Vector2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
-        anchor = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1]) #We always anchor to right
+        anchor = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
 
         draw_circle_v(current_pos, 2.0, TempestColors.GREEN_NEON.rgba())
         draw_circle_v(anchor, 2.0, TempestColors.PURPLE_NEON.rgba())

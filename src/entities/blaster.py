@@ -22,8 +22,6 @@ class Blaster:
             raise ValueError("Border index cannot be less than 0 or greater than 15.")
         self._border_idx = value
 
-    #TODO: fix movement and drawing system
-
     def _shift_left(self):
         # TODO: play movement sound
         if LEVEL.world.is_loop:

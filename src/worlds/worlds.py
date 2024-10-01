@@ -11,6 +11,11 @@ class LevelData(BaseModel):
     y: List[int]  # The y-coordinates of the points in the level.
     # In the original arcade game, a 125% y-scale was applied to everything drawn, meaning the y-values were stretched.
 
+    # TODO: optimize world generation saving the center proyection instead of computing it each time
+    px: List[int] = [] # The proyection y relative to the center of the screen using a scale e.g 0.12 -> 12% of x
+
+    py: List[int] = [] # The proyection y relative to the center of the screen using a scale e.g 0.12 -> 12% of y
+
     y3d: int  # The 3D y-offset (camera height), used to adjust the perspective of the levels.
     # In the original game, this offset was used to position the viewpoint relative to the level geometry.
 

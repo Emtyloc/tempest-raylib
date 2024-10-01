@@ -97,6 +97,7 @@ def main():
                 world_idx+=1
             LEVEL.world = worlds[world_idx]
             blaster.border_idx = LEVEL.world.start_idx
+            blaster.position = blaster.Position.CENTER
         elif is_key_pressed(KeyboardKey.KEY_A):
             if world_idx == 0:
                 world_idx = len(worlds) - 1
@@ -104,6 +105,7 @@ def main():
                 world_idx-=1
             LEVEL.world = worlds[world_idx]
             blaster.border_idx = LEVEL.world.start_idx
+            blaster.position = blaster.Position.CENTER
                 
 
         blaster.update()

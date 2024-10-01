@@ -8,3 +8,10 @@ def vector2_center_scale(vector: Vector2, center: Vector2, scale_factor: float) 
     scaled_offset = vector2_scale(offset_vector, scale_factor) 
     scaled_vector = vector2_add(center, scaled_offset)
     return scaled_vector
+
+def vector2_perp(v: Vector2) -> Vector2:
+    """
+    Returns normalize perpendicular vector.
+    """
+    return vector2_normalize(Vector2(-v.y, v.x))
+

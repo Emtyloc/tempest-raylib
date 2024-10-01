@@ -1,6 +1,8 @@
-from src.shared import LEVEL, TempestColors
+from src.shared import LEVEL, TempestColors, SCREEN_CENTER
 from pyray import *
 from enum import Enum
+from src.utils import vector2_perp
+
 
 class Blaster:
     """
@@ -11,35 +13,28 @@ class Blaster:
         """
         Position inside a border section.
         """
+
         LEFT = 0
         CENTER_LEFT = 1
-        CENTER = 2 
+        CENTER = 2
         CENTER_RIGHT = 3
         RIGHT = 4
 
-        def next_value(self):
-            """
-            Returns the next enum value.
-            """
+        def next_pos(self):
             next_idx = self.value + 1
             if next_idx < len(Blaster.Position):
                 return Blaster.Position(next_idx)
             return Blaster.Position.LEFT
 
-        def prev_value(self):
-            """
-            Returns the previous enum value.
-            """
+        def prev_pos(self):
             prev_idx = self.value - 1
             if prev_idx >= 0:
                 return Blaster.Position(prev_idx)
             return Blaster.Position.RIGHT
 
-
-
     def __init__(self) -> None:
         self._init_defaults()
-    
+
     def _init_defaults(self) -> None:
         self.border_idx = LEVEL.world.start_idx
         self.position = Blaster.Position.CENTER
@@ -47,52 +42,51 @@ class Blaster:
     @property
     def border_idx(self):
         return self._border_idx
-    
+
     @border_idx.setter
     def border_idx(self, value: int):
         if value < 0 or value > 15:
             raise ValueError("Border index cannot be less than 0 or greater than 15.")
         self._border_idx = value
 
+    # NOTE: all levels were constructed clock-wise, and appended to the (x,y) list in that order
+    # which means that border_idx + 1 jumps to left/clock-wise, and vice-versa.
+
     def _shift_left(self):
         # TODO: play movement sound
         if LEVEL.world.is_loop:
-            if self.border_idx == 15:
-                if self.position is Blaster.Position.LEFT:
+            if self.position is Blaster.Position.LEFT:
+                if self.border_idx == 15:
                     self.border_idx = 0
-            else:
-                if self.position is Blaster.Position.LEFT:
+                else:
                     self.border_idx += 1
-            self.position = self.position.prev_value()
-        else:
-            if self.border_idx < 15:
-                if self.position is Blaster.Position.LEFT:
-                    self.border_idx += 1
-                self.position = self.position.prev_value()
-            elif self.position != Blaster.Position.LEFT:
-                self.position = self.position.prev_value()
+            self.position = self.position.prev_pos()
 
-    
+        else:
+            if self.position is Blaster.Position.LEFT:
+                if self.border_idx < 15:
+                    self.border_idx += 1
+                    self.position = self.position.prev_pos()
+            else:
+                self.position = self.position.prev_pos()
+
     def _shift_right(self):
         # TODO: play movement sound
         if LEVEL.world.is_loop:
-            if self.border_idx == 0:
-                if self.position is Blaster.Position.RIGHT:
+            if self.position is Blaster.Position.RIGHT:
+                if self.border_idx == 0:
                     self.border_idx = 15
-            else:
-                if self.position is Blaster.Position.RIGHT:
+                else:
                     self.border_idx -= 1
-            self.position = self.position.next_value()
+            self.position = self.position.next_pos()
         else:
-            if self.border_idx > 1:
-                if self.position is Blaster.Position.RIGHT:
+            if self.position is Blaster.Position.RIGHT:
+                if self.border_idx > 1:
                     self.border_idx -= 1
-                self.position = self.position.next_value()
-            elif self.position != Blaster.Position.RIGHT:
-                self.position = self.position.next_value()
+                    self.position = self.position.next_pos()
+            else:
+                self.position = self.position.next_pos()
 
-    # TODO: fix shift when on last position and last border
-    
     def update(self):
         """
         Checks main loop events e.g. pressed keys.
@@ -100,62 +94,164 @@ class Blaster:
 
         if is_key_down(KeyboardKey.KEY_RIGHT):
             self._shift_left()
-        
+
         if is_key_down(KeyboardKey.KEY_LEFT):
             self._shift_right()
-        
-    
+
+    # TODO: Draw inside Blaster vectors.
     def draw(self):
         """
         Draw blaster in the world.
         """
 
-        border_idx = Vector2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
+        # left border -> */__\
+        border = Vector2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
+        # /__\* <- right border
+        next_border = Vector2(
+            LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1]
+        )
+        # distance from border line and blaster spike (highest point)
+        blaster_height = vector_2distance(border, next_border) / 4
+        tongs_height = blaster_height / 2
 
+        # Compute anchors to draw within Blaster position. */__*__\ <-> */____\* <-> /__*__\*
         match self.position:
             case Blaster.Position.LEFT:
-                out_left = border_idx
-                next_border = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
-                middle_dis = vector_2distance(out_left, next_border) / 2
-                out_right = vector2_move_towards(out_left, next_border, middle_dis)
-            
+                out_left = border
+                out_right = vector2_lerp(out_left, next_border, 0.5)
+
+                # spike vector
+                border_line = vector2_subtract(out_right, out_left)
+                perp = vector2_scale(vector2_perp(border_line), blaster_height)
+                spike = vector2_add(border, perp)
+
+                # tongs vectors
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(out_left, out_right, 0.5)
+                right_half_quarter = vector2_lerp(out_right, next_border, 0.5)
+                perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+                left_tong = vector2_add(left_quarter, perp)
+                right_tong = vector2_add(right_half_quarter, perp)
+
+                # draw outside lines
+                # spike
+                draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                # tong
+                draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+
             case Blaster.Position.CENTER_LEFT:
-                out_left = border_idx
-                out_right = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
-            
+                out_left = border
+                out_right = Vector2(
+                    LEVEL.world.x[self.border_idx - 1],
+                    LEVEL.world.y[self.border_idx - 1],
+                )
+
+                # spike vector
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(border, next_border, 0.25)
+                perp = vector2_scale(vector2_perp(border_line), blaster_height)
+                spike = vector2_add(left_quarter, perp)
+
+                # tongs vectors
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(out_left, out_right, 0.25)
+                right_quarter = vector2_lerp(out_right, out_left, 0.25)
+                perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+                left_tong = vector2_add(left_quarter, perp)
+                right_tong = vector2_add(right_quarter, perp)
+
+                # draw outside lines
+                # spike
+                draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                # tong
+                draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+
             case Blaster.Position.CENTER:
-                out_left = border_idx
-                out_right = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
-                
+                out_left = border
+                out_right = Vector2(
+                    LEVEL.world.x[self.border_idx - 1],
+                    LEVEL.world.y[self.border_idx - 1],
+                )
+
+                # spike vector
+                border_line = vector2_subtract(out_right, out_left)
+                middle = vector2_lerp(border, next_border, 0.5)
+                perp = vector2_scale(vector2_perp(border_line), blaster_height)
+                spike = vector2_add(middle, perp)
+
+                # tongs vectors
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(out_left, out_right, 0.25)
+                right_quarter = vector2_lerp(out_right, out_left, 0.25)
+                perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+                left_tong = vector2_add(left_quarter, perp)
+                right_tong = vector2_add(right_quarter, perp)
+
+                # draw outside lines
+                # spike
+                draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                # tong
+                draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+
             case Blaster.Position.CENTER_RIGHT:
-                out_left = border_idx
-                out_right = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
+                out_left = border
+                out_right = Vector2(
+                    LEVEL.world.x[self.border_idx - 1],
+                    LEVEL.world.y[self.border_idx - 1],
+                )
+
+                # spike vector
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(next_border, border, 0.25)
+                perp = vector2_scale(vector2_perp(border_line), blaster_height)
+                spike = vector2_add(left_quarter, perp)
+
+                # tongs vectors
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(border, next_border, 0.25)
+                right_quarter = vector2_lerp(next_border, border, 0.25)
+                perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+                left_tong = vector2_add(left_quarter, perp)
+                right_tong = vector2_add(right_quarter, perp)
+
+                # draw outside lines
+                # spike
+                draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                # tong
+                draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
 
             case Blaster.Position.RIGHT:
-                next_border = Vector2(LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1])
-                middle_dis = vector_2distance(border_idx, next_border) / 2
-                out_left = vector2_move_towards(border_idx, next_border, middle_dis)
+                out_left = vector2_lerp(border, next_border, 0.5)
                 out_right = next_border
+
+                # spike vector
+                border_line = vector2_subtract(out_right, out_left)
+                perp = vector2_scale(vector2_perp(border_line), blaster_height)
+                spike = vector2_add(next_border, perp)
+
+                # tongs vectors
+                border_line = vector2_subtract(out_right, out_left)
+                left_quarter = vector2_lerp(out_left, border, 0.5)
+                right_half_quarter = vector2_lerp(out_right, out_left, 0.5)
+                perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+                left_tong = vector2_add(left_quarter, perp)
+                right_tong = vector2_add(right_half_quarter, perp)
+
+                # draw outside lines
+                # spike
+                draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+                # tong
+                draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+                draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
 
             case _:
                 raise ValueError("Unknown position.")
-
-
-        # This is constant between blaster inside position
-            
-        draw_circle_v(out_left, 4.0, TempestColors.YELLOW_NEON.rgba())
-        draw_circle_v(out_right, 4.0, TempestColors.YELLOW_NEON.rgba())
-
-
-        # anchor_middle_dis = vector_2distance(out_left, out_right) / 2
-
-        # circle_pos = vector2_move_towards(out_left, , anchor_middle_dis)
-
-        # draw_circle_v(circle_pos, 3.0, TempestColors.YELLOW_NEON.rgba())
-
-    
-
-
-
-
-

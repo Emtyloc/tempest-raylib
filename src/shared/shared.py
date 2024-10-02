@@ -1,15 +1,15 @@
 from pyray import Vector2, Color, RAYWHITE
-from src.level import Level
 from enum import Enum
+
+"""
+NOTE: It is important that here you define constants only.
+DO NOT import or initialize other python modules to avoid circular imports.
+"""
 
 SCREEN_WIDTH: int = 600
 SCREEN_HEIGHT: int = 800
 TARGET_FPS = 60
 SCREEN_CENTER = Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-LEVEL = Level()
-
-
-
 
 class TempestColors(Enum):
     BLUE_NEON = Color(31, 81, 255, 255)

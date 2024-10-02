@@ -1,5 +1,8 @@
 from typing import List
 from pydantic import BaseModel
+from ..utils import vector2_center_scale
+from pyray import *
+from ..shared import SCREEN_CENTER
 
 
 # TYPE USED TO STORE LEVELS DATA
@@ -23,6 +26,22 @@ class LevelData(BaseModel):
     # In a closed level (with 16 sectors), the path loops. In an open level (with 15 sectors), it doesn’t.
 
     start_idx: int
+
+    #NOTE: In the maintime we use this to compute the proyection
+    def get_proyection(self) -> list[Vector2]:
+        """
+        Compute and get the proyection of the level using x,y coordenates and the y3d offset.
+        """
+        PROYECTION_SCALE = 0.12
+        
+        proyections: list[Vector2] = []
+        for x,y in zip(self.x, self.y):
+            center_scaled = vector2_center_scale(Vector2(x, y), SCREEN_CENTER, PROYECTION_SCALE)
+            proyection_vec = Vector2(center_scaled.x, center_scaled.y + self.y3d)
+            proyections.append(proyection_vec)
+        
+        return proyections
+
 
 circle_world = LevelData(
     x=[550.0, 530.0, 476.0, 395.0, 300.0, 205.0, 124.0, 70.0, 50.0, 70.0, 124.0, 205.0, 300.0, 395.0, 476.0, 530.0],

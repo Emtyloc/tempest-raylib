@@ -22,9 +22,9 @@ def setup_window():
 
 def init_2d_camera() -> Camera2D:
     camera = Camera2D()
-    camera.target = SCREEN_CENTER  # WHERE THE CAMARA IS LOCATED INSIDE THE GAME
+    camera.target = SCREEN_CENTER.vector2  # WHERE THE CAMARA IS LOCATED INSIDE THE GAME
     camera.offset = (
-        SCREEN_CENTER  # WHERE THE CAMERA IMAGE IS DISPLAYED IN THE PLAYER SCREEN
+        SCREEN_CENTER.vector2  # WHERE THE CAMERA IMAGE IS DISPLAYED IN THE PLAYER SCREEN
     )
     camera.rotation = 0
     camera.zoom = 1.0

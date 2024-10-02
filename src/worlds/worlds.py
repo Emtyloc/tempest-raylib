@@ -36,7 +36,7 @@ class LevelData(BaseModel):
         
         proyections: list[Vec2] = []
         for x,y in zip(self.x, self.y):
-            center_scaled = Vec2(x, y).center_scale(Vec2.to_Vec2(SCREEN_CENTER), PROYECTION_SCALE)
+            center_scaled = Vec2(x, y).center_scale(SCREEN_CENTER, PROYECTION_SCALE)
             proyection_vec = Vec2(center_scaled.x, center_scaled.y + self.y3d)
             proyections.append(proyection_vec)
         

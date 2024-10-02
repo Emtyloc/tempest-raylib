@@ -142,19 +142,19 @@ class Vec2:
         res = vector2_move_towards(self.vector2, target_v.vector2, max_distance)
         return self.to_Vec2(res)
 
-    def vector2_negate(self):
+    def negate(self):
         res = vector2_negate(self.vector2)
         return self.to_Vec2(res)
 
-    def vector2_normalize(self):
+    def normalize(self):
         res =  vector2_normalize(self.vector2)
         return self.to_Vec2(res)
         
-    def vector2_reflect(self, normal_v):
+    def reflect(self, normal_v):
         res = vector2_reflect(self.vector2, normal_v.vector2)
         return self.to_Vec2(res)
 
-    def vector2_rotate(self, angle: float):
+    def rotate(self, angle: float):
         res = vector2_rotate(self.vector2, angle)
         return self.to_Vec2(res)
 

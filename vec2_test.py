@@ -141,19 +141,19 @@ class Vec2:
         res = vector2_move_towards(self.vector2, target_v.vector2, max_distance)
         return self.to_Vec2(res)
 
-    def vector2_negate(self):
+    def negate(self):
         res = vector2_negate(self.vector2)
         return self.to_Vec2(res)
 
-    def vector2_normalize(self):
+    def normalize(self):
         res =  vector2_normalize(self.vector2)
         return self.to_Vec2(res)
         
-    def vector2_reflect(self, normal_v):
+    def reflect(self, normal_v):
         res = vector2_reflect(self.vector2, normal_v.vector2)
         return self.to_Vec2(res)
 
-    def vector2_rotate(self, angle: float):
+    def rotate(self, angle: float):
         res = vector2_rotate(self.vector2, angle)
         return self.to_Vec2(res)
 
@@ -237,13 +237,13 @@ if __name__ == "__main__":
     
     print("Move Towards:", v1.move_towards(v2, 0.5))
     
-    print("Negate:", v1.vector2_negate())
+    print("Negate:", v1.negate())
     
-    print("Normalize:", v1.vector2_normalize())
+    print("Normalize:", v1.normalize())
     
-    print("Reflect:", v1.vector2_reflect(v2))
+    print("Reflect:", v1.reflect(v2))
     
-    print("Rotate:", v1.vector2_rotate(45))
+    print("Rotate:", v1.rotate(45))
     
     # I don't know why this not work
     # mat = Matrix2x2(1, 0, 0, 1)

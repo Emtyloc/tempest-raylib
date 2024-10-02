@@ -28,6 +28,7 @@ def init_2d_camera() -> Camera2D:
     )
     camera.rotation = 0
     camera.zoom = 1.0
+    return camera
 
 def main():
     

@@ -1,6 +1,6 @@
 from typing import List
 from pydantic import BaseModel
-from ..utils import vector2_center_scale
+from ..utils import Vec2
 from pyray import *
 from ..shared import SCREEN_CENTER
 
@@ -28,16 +28,16 @@ class LevelData(BaseModel):
     start_idx: int
 
     #NOTE: In the maintime we use this to compute the proyection
-    def get_proyection(self) -> list[Vector2]:
+    def get_proyection(self) -> list[Vec2]:
         """
         Compute and get the proyection of the level using x,y coordenates and the y3d offset.
         """
         PROYECTION_SCALE = 0.12
         
-        proyections: list[Vector2] = []
+        proyections: list[Vec2] = []
         for x,y in zip(self.x, self.y):
-            center_scaled = vector2_center_scale(Vector2(x, y), SCREEN_CENTER, PROYECTION_SCALE)
-            proyection_vec = Vector2(center_scaled.x, center_scaled.y + self.y3d)
+            center_scaled = Vec2(x, y).center_scale(Vec2.to_Vec2(SCREEN_CENTER), PROYECTION_SCALE)
+            proyection_vec = Vec2(center_scaled.x, center_scaled.y + self.y3d)
             proyections.append(proyection_vec)
         
         return proyections

@@ -1,8 +1,7 @@
 from src.shared import TempestColors, SCREEN_CENTER
 from pyray import *
 from enum import Enum
-from src.utils import vector2_perp
-from src.utils import vector2_center_scale
+from src.utils import Vec2
 from src.level import LEVEL
 
 
@@ -107,42 +106,42 @@ class Blaster:
         """
 
         # left border -> */__\
-        border = Vector2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
+        border = Vec2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
         # /__\* <- right border
-        next_border = Vector2(
+        next_border = Vec2(
             LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1]
         )
-        border_line = vector2_subtract(next_border, border)
+        border_line = next_border - border
         # distance from border line and blaster spike (highest point)
-        blaster_height = vector_2distance(border, next_border) / 4
+        blaster_height = border.distance(next_border) / 4
         tongs_height = blaster_height / 2
 
         def tong_vectors(
-            out_left: Vector2, out_right: Vector2
-        ) -> tuple[Vector2, Vector2]:
+            out_left: Vec2, out_right: Vec2
+        ) -> tuple[Vec2, Vec2]:
             """
             Compute Blaster tong vectors using out_left and out_right anchors.
             """
 
-            perp = vector2_scale(vector2_perp(border_line), -tongs_height)
+            perp = border_line.perp_norm() * -tongs_height
 
             if self.position is Blaster.Position.LEFT:
-                left_quarter = vector2_lerp(out_left, out_right, 0.5)
-                right_half_quarter = vector2_lerp(out_right, next_border, 0.5)
-                left_tong = vector2_add(left_quarter, perp)
-                right_tong = vector2_add(right_half_quarter, perp)
+                left_quarter = out_left.lerp(out_right, 0.5)
+                right_half_quarter = out_right.lerp(next_border, 0.5)
+                left_tong = left_quarter + perp
+                right_tong = right_half_quarter + perp
 
             elif self.position is Blaster.Position.RIGHT:
-                left_quarter = vector2_lerp(out_left, border, 0.5)
-                right_half_quarter = vector2_lerp(out_right, out_left, 0.5)
-                left_tong = vector2_add(left_quarter, perp)
-                right_tong = vector2_add(right_half_quarter, perp)
+                left_quarter = out_left.lerp(border, 0.5)
+                right_half_quarter = out_right.lerp(out_left, 0.5)
+                left_tong = left_quarter + perp
+                right_tong = right_half_quarter + perp
 
             else:
-                left_quarter = vector2_lerp(out_left, out_right, 0.25)
-                right_quarter = vector2_lerp(out_right, out_left, 0.25)
-                left_tong = vector2_add(left_quarter, perp)
-                right_tong = vector2_add(right_quarter, perp)
+                left_quarter = out_left.lerp(out_right, 0.25)
+                right_quarter = out_right.lerp(out_left, 0.25)
+                left_tong = left_quarter + perp
+                right_tong = right_quarter + perp
 
             return left_tong, right_tong
 
@@ -151,40 +150,40 @@ class Blaster:
         match self.position:
             case Blaster.Position.LEFT:
                 out_left = border
-                out_right = vector2_lerp(out_left, next_border, 0.5)
-                perp = vector2_scale(vector2_perp(border_line), blaster_height)
-                spike = vector2_add(border, perp)
+                out_right = out_left.lerp(next_border, 0.5)
+                perp = border_line.perp_norm() * blaster_height
+                spike = border + perp
                 left_tong, right_tong = tong_vectors(out_left, out_right)
 
             case Blaster.Position.CENTER_LEFT:
                 out_left = border
                 out_right = next_border
-                left_quarter = vector2_lerp(border, next_border, 0.25)
-                perp = vector2_scale(vector2_perp(border_line), blaster_height)
-                spike = vector2_add(left_quarter, perp)
+                left_quarter = border.lerp(next_border, 0.25)
+                perp = border_line.perp_norm() * blaster_height
+                spike = left_quarter + perp
                 left_tong, right_tong = tong_vectors(out_left, out_right)
 
             case Blaster.Position.CENTER:
                 out_left = border
                 out_right = next_border
-                middle = vector2_lerp(border, next_border, 0.5)
-                perp = vector2_scale(vector2_perp(border_line), blaster_height)
-                spike = vector2_add(middle, perp)
+                middle = border.lerp(next_border, 0.5)
+                perp = border_line.perp_norm() * blaster_height
+                spike = middle + perp
                 left_tong, right_tong = tong_vectors(out_left, out_right)
 
             case Blaster.Position.CENTER_RIGHT:
                 out_left = border
                 out_right = next_border
-                left_quarter = vector2_lerp(next_border, border, 0.25)
-                perp = vector2_scale(vector2_perp(border_line), blaster_height)
-                spike = vector2_add(left_quarter, perp)
+                left_quarter = next_border.lerp(border, 0.25)
+                perp = border_line.perp_norm() * blaster_height
+                spike = left_quarter + perp
                 left_tong, right_tong = tong_vectors(out_left, out_right)
 
             case Blaster.Position.RIGHT:
-                out_left = vector2_lerp(border, next_border, 0.5)
+                out_left = border.lerp(next_border, 0.5)
                 out_right = next_border
-                perp = vector2_scale(vector2_perp(border_line), blaster_height)
-                spike = vector2_add(next_border, perp)
+                perp = border_line.perp_norm() * blaster_height
+                spike = next_border + perp
                 left_tong, right_tong = tong_vectors(out_left, out_right)
 
             case _:
@@ -192,13 +191,13 @@ class Blaster:
 
         # Draw outside lines
         # spike
-        draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left.vector2, spike.vector2, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_right.vector2, spike.vector2, 2, TempestColors.YELLOW_NEON.rgba())
         # tong
-        draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left.vector2, left_tong.vector2, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_right.vector2, right_tong.vector2, 2, TempestColors.YELLOW_NEON.rgba())
 
         # Change color of blaster current border section  -> /_x_\ <-
         proyections = LEVEL.world.get_proyection()
-        draw_line_ex(border, proyections[self.border_idx], 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(next_border, proyections[self.border_idx - 1], 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(border.vector2, proyections[self.border_idx].vector2, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(next_border.vector2, proyections[self.border_idx - 1].vector2, 2, TempestColors.YELLOW_NEON.rgba())

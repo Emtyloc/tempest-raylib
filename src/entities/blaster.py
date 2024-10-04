@@ -22,7 +22,7 @@ class Blaster:
         RIGHT = 4
 
         def next_pos(self):
-            next_idx = self.value + 1
+            next_idx = self.value + 1 # 
             if next_idx < len(Blaster.Position):
                 return Blaster.Position(next_idx)
             return Blaster.Position.LEFT
@@ -39,6 +39,8 @@ class Blaster:
     def _init_defaults(self) -> None:
         self.border_idx = LEVEL.world.start_idx
         self.position = Blaster.Position.CENTER
+        self.velocity = 60 #Steps for iteration (steps/second)
+        self.remain_steps = 0 #Remaining steps for next iteration
 
     @property
     def border_idx(self):
@@ -52,7 +54,6 @@ class Blaster:
 
     # NOTE: all levels were constructed clock-wise, and appended to the (x,y) list in that order
     # which means that border_idx + 1 jumps to left/clock-wise, and vice-versa.
-
     def _shift_left(self):
         # TODO: play movement sound
         if LEVEL.world.is_loop:
@@ -88,16 +89,33 @@ class Blaster:
             else:
                 self.position = self.position.next_pos()
 
+    def move_left(self, full_steps: float):
+        steps = int(full_steps)
+
+        for _ in range(steps):
+            self._shift_left()
+        
+    def move_right(self, full_steps: int):
+        for _ in range(full_steps):
+            self._shift_right()
+    
     def update(self):
         """
         Checks main loop events e.g. pressed keys.
         """
 
+        move_steps: float = self.velocity * get_frame_time() + self.remain_steps
+        full_steps: int = int(move_steps)
+        self.remain_steps = move_steps - full_steps #Save remainder
+
+
         if is_key_down(KeyboardKey.KEY_RIGHT):
-            self._shift_left()
+            self.move_left(full_steps)
 
         if is_key_down(KeyboardKey.KEY_LEFT):
-            self._shift_right()
+            self.move_right(full_steps)
+        
+
 
     # TODO: Draw inside Blaster vectors.
     def draw(self):

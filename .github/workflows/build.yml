@@ -39,7 +39,7 @@ jobs:
           windows-icon-from-ico: icon.ico
           onefile: true
           include-data-dir: shaders=shaders
-          windows-console-mode: disable
+        #   windows-console-mode: disable
           onefile-no-compression: true
 
       - name: Upload Artifacts

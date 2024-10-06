@@ -3,11 +3,23 @@
         "enemies": {
             "Flipper": {
                 "quantity": 10,
-                "velocity": 0.125
+                "velocity": 0.8
             }
         },
         "world": {
             "name": "circle_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "2": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "square_world",
             "color": "BLUE_NEON"
         }
     }

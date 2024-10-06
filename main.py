@@ -1,6 +1,5 @@
 from pyray import *
 from raylib import ffi
-from src.worlds import *
 from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS, EventManager
 from src.entities import Blaster, Level
 from enum import IntEnum
@@ -40,14 +39,8 @@ def main():
     camera = init_2d_camera()
     gloom_shader = init_gloom_shader()
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
-    
-    # world_idx = 0
-    # worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
-
 
     event_manager = EventManager()
-    # level = Level(event_manager)
-    # blaster = Blaster(event_manager)
     level = Level(event_manager)
     level.load_level_data(level_number = 1)
     blaster = Blaster(level.world, event_manager)
@@ -55,27 +48,6 @@ def main():
 
     # Main game loop
     while not window_should_close():
-        # if is_key_pressed(KeyboardKey.KEY_D):
-        #     if world_idx == len(worlds) - 1:
-        #         world_idx = 0
-        #     else:
-        #         world_idx+=1
-        #     level.world = worlds[world_idx]
-        #     blaster.border_idx = level.world.start_idx
-        #     blaster.position = blaster.Position.CENTER
-        #     # flipper.border_idx = level.world.start_idx
-        #     # flipper.deep = 0
-
-        # elif is_key_pressed(KeyboardKey.KEY_A):
-        #     if world_idx == 0:
-        #         world_idx = len(worlds) - 1
-        #     else:
-        #         world_idx-=1
-        #     level.world = worlds[world_idx]
-        #     blaster.border_idx = level.world.start_idx
-        #     blaster.position = blaster.Position.CENTER
-        #     # flipper.border_idx = level.world.start_idx
-        #     # flipper.deep = 0
 
         if is_key_pressed(KeyboardKey.KEY_ENTER):
             level.rand_enemy_spawn()

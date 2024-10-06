@@ -66,7 +66,6 @@ class Level:
                         event_manager = self.event_manager
                     )
                     self.enemies.append(enemy)
-            print(self.enemies)
 
 
     def draw(self):

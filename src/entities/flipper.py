@@ -32,18 +32,24 @@ class Flipper(Enemy):
     def next_border_v(self):
         return Vec2(self.world.x[self._next_border_idx], self.world.y[self._next_border_idx])
 
-
     def move_towards_player(self):
         proyections = self.world.get_proyections()
 
         proy = proyections[self.border_idx]
         next_proy = proyections[self._next_border_idx]
 
+        # total perspective distance
         l_deep_distance = self.border_v.distance(proy)
         r_deep_distance = self.next_border_v.distance(next_proy)
 
-        l_move_distance =  l_deep_distance  * self.velocity * get_frame_time()
-        r_move_distance =  r_deep_distance  * self.velocity * get_frame_time()
+        # current perspective distance
+        l_anchor_dis = self.left_anchor.distance(proy)
+        r_anchor_dis = self.right_anchor.distance(next_proy)
+
+        pers_correction = 0.01 # fraction of deep_distance to avoid anchor_dis to be 0
+
+        l_move_distance =  (l_anchor_dis + l_deep_distance * pers_correction) * self.velocity * get_frame_time()
+        r_move_distance =  (r_anchor_dis + r_deep_distance * pers_correction) * self.velocity * get_frame_time()
 
         self.left_anchor = self.left_anchor.move_towards(self.border_v, l_move_distance)
         self.right_anchor = self.right_anchor.move_towards(self.next_border_v, r_move_distance)

@@ -1,5 +1,5 @@
 # tempest-raylib
-Recreation of ATARI Tempest using Raylib and Python3 bindings.
+Recreation of ATARI Tempest using [Raylib](https://www.raylib.com/) [Python3 bindings](https://electronstudio.github.io/raylib-python-cffi/).
 
 
 # Useful links

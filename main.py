@@ -1,9 +1,10 @@
 from pyray import *
 from raylib import ffi
 from src.worlds import *
-from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS
-from src.entities import Blaster
-from src.level import LEVEL
+from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS, EventManager
+from src.entities import Blaster, Level
+from enum import IntEnum
+import json
 import os
 
 
@@ -16,15 +17,17 @@ def init_gloom_shader() -> Shader:
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
     return gloom_shader
 
+icon = load_image(os.path.join(os.path.dirname(__file__), "icon.ico"))
 def setup_window():
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
+    set_window_icon(icon)
     set_target_fps(TARGET_FPS)
 
 def init_2d_camera() -> Camera2D:
     camera = Camera2D()
-    camera.target = SCREEN_CENTER.vector2  # WHERE THE CAMARA IS LOCATED INSIDE THE GAME
+    camera.target = SCREEN_CENTER  # WHERE THE CAMARA IS LOCATED INSIDE THE GAME
     camera.offset = (
-        SCREEN_CENTER.vector2  # WHERE THE CAMERA IMAGE IS DISPLAYED IN THE PLAYER SCREEN
+        SCREEN_CENTER  # WHERE THE CAMERA IMAGE IS DISPLAYED IN THE PLAYER SCREEN
     )
     camera.rotation = 0
     camera.zoom = 1.0
@@ -38,33 +41,48 @@ def main():
     gloom_shader = init_gloom_shader()
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
     
-    world_idx = 0
-    worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
+    # world_idx = 0
+    # worlds = [circle_world, square_world, plus_world, peanut_world, cross_world, triangle_world, clover_world, vee_world, steps_world, u_shape_world, line_world, heart_world, star_world, w_shape_world, broken_v_world, infinity_world]
 
-    LEVEL.world = worlds[world_idx]
-    blaster = Blaster()
+
+    event_manager = EventManager()
+    # level = Level(event_manager)
+    # blaster = Blaster(event_manager)
+    level = Level(event_manager)
+    level.load_level_data(level_number = 1)
+    blaster = Blaster(level.world, event_manager)
+    
+
     # Main game loop
     while not window_should_close():
-        # LOOP SETTINGS BEFORE START THE RENDERING - BEGIN_DRAWING
+        # if is_key_pressed(KeyboardKey.KEY_D):
+        #     if world_idx == len(worlds) - 1:
+        #         world_idx = 0
+        #     else:
+        #         world_idx+=1
+        #     level.world = worlds[world_idx]
+        #     blaster.border_idx = level.world.start_idx
+        #     blaster.position = blaster.Position.CENTER
+        #     # flipper.border_idx = level.world.start_idx
+        #     # flipper.deep = 0
 
-        if is_key_pressed(KeyboardKey.KEY_D):
-            if world_idx == len(worlds) - 1:
-                world_idx = 0
-            else:
-                world_idx+=1
-            LEVEL.world = worlds[world_idx]
-            blaster.border_idx = LEVEL.world.start_idx
-            blaster.position = blaster.Position.CENTER
-        elif is_key_pressed(KeyboardKey.KEY_A):
-            if world_idx == 0:
-                world_idx = len(worlds) - 1
-            else:
-                world_idx-=1
-            LEVEL.world = worlds[world_idx]
-            blaster.border_idx = LEVEL.world.start_idx
-            blaster.position = blaster.Position.CENTER
-                
+        # elif is_key_pressed(KeyboardKey.KEY_A):
+        #     if world_idx == 0:
+        #         world_idx = len(worlds) - 1
+        #     else:
+        #         world_idx-=1
+        #     level.world = worlds[world_idx]
+        #     blaster.border_idx = level.world.start_idx
+        #     blaster.position = blaster.Position.CENTER
+        #     # flipper.border_idx = level.world.start_idx
+        #     # flipper.deep = 0
 
+        if is_key_pressed(KeyboardKey.KEY_ENTER):
+            level.rand_enemy_spawn()
+
+        # Update game
+        
+        level.update()
         blaster.update()
         
         begin_drawing()
@@ -74,9 +92,10 @@ def main():
         clear_background(BLACK)
         begin_mode_2d(camera)
         
-        LEVEL.draw()
+        # Draw game
+        level.draw()
         blaster.draw()
-        
+
         end_mode_2d()
         end_texture_mode()
 
@@ -89,6 +108,7 @@ def main():
 
     unload_shader(gloom_shader)
     unload_render_texture(render_texture)
+    unload_image(icon)
     close_window()
 
 

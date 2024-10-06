@@ -1,0 +1,14 @@
+{
+    "1": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.125
+            }
+        },
+        "world": {
+            "name": "circle_world",
+            "color": "BLUE_NEON"
+        }
+    }
+}

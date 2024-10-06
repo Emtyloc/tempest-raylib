@@ -1,8 +1,8 @@
-from src.shared import TempestColors, SCREEN_CENTER
+from src.shared import TempestColors, SCREEN_CENTER, EventManager
 from pyray import *
-from enum import Enum
+from enum import IntEnum
 from src.utils import Vec2
-from src.level import LEVEL
+from src.worlds import WorldData
 
 
 class Blaster:
@@ -10,7 +10,7 @@ class Blaster:
     Player's shooter.
     """
 
-    class Position(Enum):
+    class Position(IntEnum):
         """
         Position inside a border section.
         """
@@ -22,22 +22,25 @@ class Blaster:
         RIGHT = 4
 
         def next_pos(self):
-            next_idx = self.value + 1 # 
+            next_idx = self + 1 
             if next_idx < len(Blaster.Position):
                 return Blaster.Position(next_idx)
             return Blaster.Position.LEFT
 
         def prev_pos(self):
-            prev_idx = self.value - 1
+            prev_idx = self - 1
             if prev_idx >= 0:
                 return Blaster.Position(prev_idx)
             return Blaster.Position.RIGHT
 
-    def __init__(self) -> None:
+    def __init__(self, world: WorldData, event_manager: EventManager) -> None:
         self._init_defaults()
+        self.event_manager = event_manager
+        self.world = world
+        self.border_idx = world.start_idx
+        event_manager.notify(EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx})
 
     def _init_defaults(self) -> None:
-        self.border_idx = LEVEL.world.start_idx
         self.position = Blaster.Position.CENTER
         self.velocity = 60 #Steps for iteration (steps/second)
         self.remain_steps = 0 #Remaining steps for next iteration
@@ -56,12 +59,15 @@ class Blaster:
     # which means that border_idx + 1 jumps to left/clock-wise, and vice-versa.
     def _shift_left(self):
         # TODO: play movement sound
-        if LEVEL.world.is_loop:
+        if self.world.is_loop:
             if self.position is Blaster.Position.LEFT:
                 if self.border_idx == 15:
                     self.border_idx = 0
                 else:
                     self.border_idx += 1
+                self.event_manager.notify(
+                    EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
+                )
             self.position = self.position.prev_pos()
 
         else:
@@ -69,30 +75,37 @@ class Blaster:
                 if self.border_idx < 15:
                     self.border_idx += 1
                     self.position = self.position.prev_pos()
+                    self.event_manager.notify(
+                        EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
+                    )
             else:
                 self.position = self.position.prev_pos()
 
     def _shift_right(self):
         # TODO: play movement sound
-        if LEVEL.world.is_loop:
+        if self.world.is_loop:
             if self.position is Blaster.Position.RIGHT:
                 if self.border_idx == 0:
                     self.border_idx = 15
                 else:
                     self.border_idx -= 1
+                self.event_manager.notify(
+                    EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
+                )
             self.position = self.position.next_pos()
         else:
             if self.position is Blaster.Position.RIGHT:
                 if self.border_idx > 1:
                     self.border_idx -= 1
                     self.position = self.position.next_pos()
+                    self.event_manager.notify(
+                        EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
+                    )
             else:
                 self.position = self.position.next_pos()
 
-    def move_left(self, full_steps: float):
-        steps = int(full_steps)
-
-        for _ in range(steps):
+    def move_left(self, full_steps: int):
+        for _ in range(full_steps):
             self._shift_left()
         
     def move_right(self, full_steps: int):
@@ -103,7 +116,6 @@ class Blaster:
         """
         Checks main loop events e.g. pressed keys.
         """
-
         move_steps: float = self.velocity * get_frame_time() + self.remain_steps
         full_steps: int = int(move_steps)
         self.remain_steps = move_steps - full_steps #Save remainder
@@ -114,8 +126,6 @@ class Blaster:
 
         if is_key_down(KeyboardKey.KEY_LEFT):
             self.move_right(full_steps)
-        
-
 
     # TODO: Draw inside Blaster vectors.
     def draw(self):
@@ -124,10 +134,10 @@ class Blaster:
         """
 
         # left border -> */__\
-        border = Vec2(LEVEL.world.x[self.border_idx], LEVEL.world.y[self.border_idx])
+        border = Vec2(self.world.x[self.border_idx], self.world.y[self.border_idx])
         # /__\* <- right border
         next_border = Vec2(
-            LEVEL.world.x[self.border_idx - 1], LEVEL.world.y[self.border_idx - 1]
+            self.world.x[self.border_idx - 1], self.world.y[self.border_idx - 1]
         )
         border_line = next_border - border
         # distance from border line and blaster spike (highest point)
@@ -209,13 +219,8 @@ class Blaster:
 
         # Draw outside lines
         # spike
-        draw_line_ex(out_left.vector2, spike.vector2, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right.vector2, spike.vector2, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
         # tong
-        draw_line_ex(out_left.vector2, left_tong.vector2, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right.vector2, right_tong.vector2, 2, TempestColors.YELLOW_NEON.rgba())
-
-        # Change color of blaster current border section  -> /_x_\ <-
-        proyections = LEVEL.world.get_proyection()
-        draw_line_ex(border.vector2, proyections[self.border_idx].vector2, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(next_border.vector2, proyections[self.border_idx - 1].vector2, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())

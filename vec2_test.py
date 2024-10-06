@@ -1,16 +1,24 @@
 from pyray import *
 
-class Vec2:
-    def __init__(self, x, y) -> None:
-        self.x = x
-        self.y = y
+class Vec2(list):
+    def __init__(self, x, y):
+        super(Vec2, self).__init__([x, y])
 
     @property
-    def vector2(self):
-        """
-        Cast Vec2 to Vector2.
-        """
-        return Vector2(self.x, self.y)
+    def x(self):
+        return self[0]
+
+    @x.setter
+    def x(self, value):
+        self[0]= value
+
+    @property
+    def y(self):
+        return self[1]
+
+    @y.setter
+    def y(self, value):
+        self[1]= value
     
     @staticmethod
     def to_Vec2(v: Vector2):
@@ -64,30 +72,30 @@ class Vec2:
     
     def __mul__(self, other):
         if isinstance(other, Vec2):
-            res = vector2_multiply(self.vector2, other.vector2)
+            res = vector2_multiply(self, other)
             return self.to_Vec2(res)
         return Vec2(self.x * other, self.y * other)
     
     def __imul__(self, other):
         if isinstance(other, Vec2):
-            res = vector2_multiply(self.vector2, other.vector2)
+            res = vector2_multiply(self, other)
         else:
-            res = vector2_scale(self.vector2, other)
+            res = vector2_scale(self, other)
         self.x = res.x
         self.y = res.y
         return self
     
     def __truediv__(self, other):
         if isinstance(other, Vec2):
-            res = vector_2divide(self.vector2, other.vector2)
+            res = vector_2divide(self, other)
             return self.to_Vec2(res)
         return Vec2(self.x / other, self.y / other)
     
     def __itruediv__(self, other):
         if isinstance(other, Vec2):
-            res = vector_2divide(self.vector2, other.vector2)
+            res = vector_2divide(self, other)
         else:
-            res = vector2_scale(self.vector2, 1/other)
+            res = vector2_scale(self, 1/other)
         self.x = res.x
         self.y = res.y
         return self
@@ -103,67 +111,67 @@ class Vec2:
 
     # PyRay mapped vector2 functions
     
-    def angle(self, other):
-        return vector2_angle(self.vector2, other.vector2)
+    def angle(self, vec2):
+        return vector2_angle(self, vec2)
     
     def clamp(self, min_vec2, max_vec2):
-        res = vector2_clamp(self.vector2, min_vec2.vector2, max_vec2.vector2)
+        res = vector2_clamp(self, min_vec2, max_vec2)
         return self.to_Vec2(res)
         
     def clamp_value(self, min_val: float, max_val: float):
-        res = vector2_clamp_value(self.vector2, min_val, max_val)
+        res = vector2_clamp_value(self, min_val, max_val)
         return self.to_Vec2(res)
     
-    def distance(self, v):
-        return vector_2distance(self.vector2, v.vector2)
+    def distance(self, vec2):
+        return vector_2distance(self, vec2)
     
-    def distance_sqr(self, v) -> float:
-        return vector_2distance_sqr(self.vector2, v.vector2)
+    def distance_sqr(self, vec2) -> float:
+        return vector_2distance_sqr(self, vec2)
     
-    def dot_product(self, v) -> float:
-        return vector_2dot_product(self.vector2, v.vector2)
+    def dot_product(self, vec2) -> float:
+        return vector_2dot_product(self, vec2)
     
     def invert(self):
-        res = vector2_invert(self.vector2)
+        res = vector2_invert(self)
         return self.to_Vec2(res)
 
     def length(self):
-        return vector2_length(self.vector2)
+        return vector2_length(self)
 
     def length_sqr(self) -> float:
-        return vector2_length_sqr(self.vector2)
+        return vector2_length_sqr(self)
     
-    def lerp(self, v, amount: float):
-        res = vector2_lerp(self.vector2, v.vector2, amount)
+    def lerp(self, vec2, amount: float):
+        res = vector2_lerp(self, vec2, amount)
         return self.to_Vec2(res)
     
-    def move_towards(self, target_v, max_distance: float):
-        res = vector2_move_towards(self.vector2, target_v.vector2, max_distance)
+    def move_towards(self, target_vec2, max_distance: float):
+        res = vector2_move_towards(self, target_vec2, max_distance)
         return self.to_Vec2(res)
 
     def negate(self):
-        res = vector2_negate(self.vector2)
+        res = vector2_negate(self)
         return self.to_Vec2(res)
 
     def normalize(self):
-        res =  vector2_normalize(self.vector2)
+        res =  vector2_normalize(self)
         return self.to_Vec2(res)
         
-    def reflect(self, normal_v):
-        res = vector2_reflect(self.vector2, normal_v.vector2)
+    def reflect(self, normal_vec2):
+        res = vector2_reflect(self, normal_vec2)
         return self.to_Vec2(res)
 
     def rotate(self, angle: float):
-        res = vector2_rotate(self.vector2, angle)
+        res = vector2_rotate(self, angle)
         return self.to_Vec2(res)
 
     def transform(self, mat: Matrix):
-        res = vector2_transform(self.vector2, mat)
+        res = vector2_transform(self, mat)
         return self.to_Vec2(res)
     
     @staticmethod
-    def line_angle(start_v, end_v) -> float:
-        return vector2_line_angle(start_v.vector2, end_v.vector2)
+    def line_angle(start_vec2, end_vec2) -> float:
+        return vector2_line_angle(start_vec2, end_vec2)
     
     @staticmethod
     def one():
@@ -207,7 +215,7 @@ if __name__ == "__main__":
     v0 = Vec2.zero()
     print(v0)
 
-    # Vector2 pyry methods
+    # Vector2 pyray methods
     v1 = Vec2(3, 4)
     v2 = Vec2(1, 2)
     v_min = Vec2(0, 0)
@@ -249,13 +257,3 @@ if __name__ == "__main__":
     # mat = Matrix2x2(1, 0, 0, 1)
     # print("Transform:", v1.transform(mat))
     
-
-
-
-
-
-
-
-
-
-

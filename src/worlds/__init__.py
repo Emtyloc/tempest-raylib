@@ -1,5 +1,5 @@
 from .worlds import (
-    LevelData,
+    WorldData,
     circle_world,
     square_world,
     plus_world,

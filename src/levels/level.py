@@ -4,9 +4,8 @@ from pyray import *
 from src.shared import TempestColors, EventManager
 from src.utils import Vec2
 from src.entities import Flipper
-from random import randint
 import os, json
-from importlib import import_module
+from importlib import import_module, resources
 
 
 class Level:
@@ -44,7 +43,7 @@ class Level:
         """
         Load level data extracted from levels.json.
         """
-        with open(os.path.join(os.path.dirname(__file__), "levels.json"), 'r') as f:
+        with resources.open_text('src.levels', 'levels.json') as f:
             data = json.load(f).get(str(level_number))
             
             world_data = data.get("world")

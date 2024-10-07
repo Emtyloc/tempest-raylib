@@ -16,7 +16,7 @@ def init_gloom_shader() -> Shader:
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
     return gloom_shader
 
-icon = load_image(os.path.join(os.path.dirname(__file__), "icon.ico"))
+icon = load_image(os.path.join(os.path.dirname(__file__), "icon.png"))
 def setup_window():
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
     set_window_icon(icon)

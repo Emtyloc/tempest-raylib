@@ -40,6 +40,7 @@ jobs:
           onefile: true
           include-data-dir: shaders=shaders
           include-package-data: src.levels
+          include-data-files: icon.png=icon.png
           windows-console-mode: disable
           onefile-no-compression: true
 

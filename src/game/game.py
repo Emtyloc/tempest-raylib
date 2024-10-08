@@ -42,7 +42,7 @@ class Game:
                 elif is_key_pressed(KeyboardKey.KEY_LEFT):
                     pass
                 elif is_key_pressed(KeyboardKey.KEY_ENTER):
-                    self.select_level(16)
+                    self.select_level(1)
 
             case GameState.PLAYING:
                 self.blaster.update_frame()

@@ -3,6 +3,7 @@ from pyray import *
 from enum import IntEnum
 from src.utils import Vec2
 from src.worlds import WorldData
+from .blaster_bullet import BlasterBullet
 
 
 class Blaster:
@@ -44,7 +45,16 @@ class Blaster:
         self.position = Blaster.Position.CENTER
         self.velocity = 60 #Steps for iteration (steps/second)
         self.remain_steps = 0 #Remaining steps for next iteration
+        
         self.bullets = []
+        self.mag_size = 10 #max acummulated bullets
+        self.current_mag = self.mag_size #bullets in magazine
+        self.reload_time = 0.175 
+        self.accum_reload_time = 0
+        self.time_btwn_shoots = 0.05
+        self.last_shoot_time = 0
+    
+
 
     @property
     def border_idx(self):
@@ -58,8 +68,20 @@ class Blaster:
 
     
     def shoot(self):
-        pass
+        bullet = BlasterBullet(self.border_idx, self.world, self.event_manager)
+        self.bullets.append(bullet)
+
+    def update_bullets_frame(self):
+        for bullet in self.bullets:
+            bullet.update_frame()
+        
+        for bullet in self.bullets[:]:
+            if not bullet.alive:
+                self.bullets.remove(bullet)
     
+    def draw_bullets_frame(self):
+        for bullet in self.bullets:
+            bullet.draw_frame()
     
     # NOTE: all levels were constructed clock-wise, and appended to the (x,y) list in that order
     # which means that border_idx + 1 jumps to left/clock-wise, and vice-versa.
@@ -118,13 +140,25 @@ class Blaster:
         for _ in range(full_steps):
             self._shift_right()
     
+    def bullets_reloading(self):
+        self.last_shoot_time += get_frame_time()
+        self.accum_reload_time += get_frame_time()
+        bullets_to_reload = self.accum_reload_time // self.reload_time
+        if bullets_to_reload > 0:
+            self.current_mag = min(self.current_mag + bullets_to_reload, self.mag_size)
+            self.accum_reload_time %= self.reload_time
+    
     def update_frame(self):
         """
         Checks main loop events e.g. pressed keys.
         """
+        # Blaster movement
         move_steps: float = self.velocity * get_frame_time() + self.remain_steps
         full_steps: int = int(move_steps)
         self.remain_steps = move_steps - full_steps #Save remainder
+        # Bullet movement
+        self.update_bullets_frame()
+        self.bullets_reloading()
 
 
         if is_key_down(KeyboardKey.KEY_RIGHT):
@@ -132,6 +166,12 @@ class Blaster:
 
         if is_key_down(KeyboardKey.KEY_LEFT):
             self.move_right(full_steps)
+
+        if is_key_down(KeyboardKey.KEY_A):
+            if self.current_mag >= 0 and self.last_shoot_time >= self.time_btwn_shoots:
+                self.shoot()
+                self.current_mag -= 1
+                self.last_shoot_time = 0
 
     # TODO: Draw inside Blaster vectors.
     def draw_frame(self):
@@ -144,7 +184,7 @@ class Blaster:
         # /__\* <- right border
         next_border = self.world.borders[self.border_idx - 1]
         border_line = next_border - border
-        
+
         # distance from border line and blaster spike (highest point)
         blaster_height = border.distance(next_border) / 4
         tongs_height = blaster_height / 2
@@ -229,3 +269,6 @@ class Blaster:
         # tong
         draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
         draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+
+        # Draw bullets
+        self.draw_bullets_frame()

@@ -33,7 +33,7 @@ class Flipper(Enemy):
         return Vec2(self.world.x[self._next_border_idx], self.world.y[self._next_border_idx])
 
     def move_towards_player(self):
-        proyections = self.world.get_proyections()
+        proyections = self.world.proyections
 
         proy = proyections[self.border_idx]
         next_proy = proyections[self._next_border_idx]

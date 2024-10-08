@@ -22,3 +22,5 @@ class EventManager(metaclass=SingletonMeta):
     
     class Topics:
         BLASTER_BORDER_UPDATE = "blaster/border/update"
+        BLASTER_BULLET_UPDATE = "blaster/bullet/update"
+        BLASTER_BULLET_COLLIDE = "blaster/bullet/collide"

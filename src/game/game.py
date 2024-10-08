@@ -14,6 +14,7 @@ class Game:
     def __init__(self) -> None:
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
+        self.current_level = 1
 
     def goto_level_selection(self):
         self.game_state = GameState.LEVEL_SELECTION
@@ -42,11 +43,14 @@ class Game:
                 elif is_key_pressed(KeyboardKey.KEY_LEFT):
                     pass
                 elif is_key_pressed(KeyboardKey.KEY_ENTER):
-                    self.select_level(1)
+                    self.select_level(self.current_level)
 
             case GameState.PLAYING:
                 self.blaster.update_frame()
                 self.level.update_frame()
+                if self.level.is_over():
+                    self.current_level += 1
+                    self.select_level(self.current_level)
     
     def draw_frame(self):
         match self.game_state:

@@ -13,6 +13,7 @@ class BlasterBullet:
         self.init_radio = 6
         self.radio = self.init_radio
         self.alive = True
+        self.event_manager.subscribe(EventManager.Topics.BLASTER_BULLET_COLLIDE, self.blaster_bullet_collide)
         self._init_pos()
 
     def _init_pos(self):
@@ -26,6 +27,12 @@ class BlasterBullet:
 
         if self.position == proy.lerp(next_proy, 0.5):
             self.alive = False
+    
+    def blaster_bullet_collide(self, data: dict):
+        bullet = data["bullet"]
+        if self is bullet: 
+            self.alive = False
+            self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_COLLIDE, self.blaster_bullet_collide)
 
     @property
     def collision_pos(self):
@@ -55,14 +62,11 @@ class BlasterBullet:
 
         self.radio = max(round(self.init_radio * current_deep_distance / deep_distance, 3), 2)
     
-        
-    
     
     def update_frame(self):
         self.check_proyection_collision()
         self.move_bullet()
-       
-
+        self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_UPDATE, {"bullet": self})
 
     def draw_frame(self):
         if self.alive:

@@ -29,14 +29,23 @@ class Level:
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
         self.enemies = []
         self.active_enemies = []
+        self.time_last_spawn = 1
 
     def update_frame(self):
+        self._spawn_enemy()
         self._update_enemies()
     
+    def _spawn_enemy(self):
+        self.time_last_spawn += get_frame_time()
+        if self.time_last_spawn >= self.spawn_time:
+            if not self.enemies: return
+            random_enemy = self.enemies[get_random_value(0, len(self.enemies) - 1)]
+            self.active_enemies.append(random_enemy)
+            self.enemies.remove(random_enemy)
+            self.time_last_spawn -= self.spawn_time
     
     def blaster_border_update(self, data: dict):
         self.blaster_border = data["border_idx"]
-
     
     # TODO: Use pydantic models to parse jsons
     def load_level_data(self, level_number: int):
@@ -65,6 +74,7 @@ class Level:
                         event_manager = self.event_manager
                     )
                     self.enemies.append(enemy)
+            self.spawn_time = data["spawn_time"]
 
 
     def draw_frame(self):
@@ -109,18 +119,15 @@ class Level:
 
     def _draw_enemies(self):
         for enemy in self.active_enemies:
-            enemy.draw()
+            enemy.draw_frame()
     
     def _update_enemies(self):
+        for enemy in self.active_enemies[:]:
+            if not enemy.alive:
+                self.active_enemies.remove(enemy)
+
         for enemy in self.active_enemies:
             enemy.update_frame()
 
     def is_over(self):
-        return not self.active_enemies
-
-    # def rand_enemy_spawn(self):
-    #     if len(self.enemies):
-    #         random_enemy_idx = get_random_value(0, len(self.enemies) - 1)
-    #         enemy = self.enemies[random_enemy_idx]
-    #         self.active_enemies.append(enemy)
-    #         self.enemies.remove(enemy)
+        return (not self.active_enemies and not self.enemies)

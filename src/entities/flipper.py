@@ -8,7 +8,11 @@ class Flipper(Enemy):
 
     def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager):
         super().__init__(border_idx, world, velocity, event_manager)
-        self.border_idx = get_random_value(1, 15)
+        if world.is_loop:
+            self.border_idx = get_random_value(0, 15)
+        else:
+            self.border_idx = get_random_value(1, 15)
+        self.alive = True
         proyections = self.world.proyections
         proy = proyections[self.border_idx]
         next_proy = proyections[self._next_border_idx]
@@ -18,6 +22,14 @@ class Flipper(Enemy):
     def update_frame(self):
         self.move_towards_player()
 
+    def blaster_bullet_update(self, data: dict):
+        bullet = data["bullet"]
+        
+        if (check_collision_point_line(bullet.position, self.left_anchor, self.right_anchor, 4) or self.left_anchor == self.border_v) and self.border_idx == bullet.border_idx:
+            self.alive = False
+            self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
+            self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+
     @property    
     def _next_border_idx(self):
         if self.border_idx == 0:
@@ -26,11 +38,11 @@ class Flipper(Enemy):
         
     @property
     def border_v(self):
-        return Vec2(self.world.x[self.border_idx], self.world.y[self.border_idx])
+        return self.world.borders[self.border_idx]
 
     @property
     def next_border_v(self):
-        return Vec2(self.world.x[self._next_border_idx], self.world.y[self._next_border_idx])
+        return self.world.borders[self._next_border_idx]
 
     def move_towards_player(self):
         proyections = self.world.proyections
@@ -66,7 +78,8 @@ class Flipper(Enemy):
 
 
     def draw_frame(self):
-    
+        if not self.alive: return
+
         section_lenght = self.left_anchor.distance(self.right_anchor) #We use this to compute all others
         
         flipper_height = section_lenght / 4

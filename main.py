@@ -1,9 +1,7 @@
 from pyray import *
 from raylib import ffi
-from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS, EventManager
-from src.entities import Blaster, Level
-from enum import IntEnum
-import json
+from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS
+from src.game import Game
 import os
 
 
@@ -40,22 +38,13 @@ def main():
     gloom_shader = init_gloom_shader()
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    event_manager = EventManager()
-    level = Level(event_manager)
-    level.load_level_data(level_number = 1)
-    blaster = Blaster(level.world, event_manager)
-    
+    game = Game()
 
     # Main game loop
     while not window_should_close():
-
-        if is_key_pressed(KeyboardKey.KEY_ENTER):
-            level.rand_enemy_spawn()
-
-        # Update game
         
-        level.update()
-        blaster.update()
+        # Update game
+        game.update_frame()
         
         begin_drawing()
 
@@ -65,8 +54,7 @@ def main():
         begin_mode_2d(camera)
         
         # Draw game
-        level.draw()
-        blaster.draw()
+        game.draw_frame()
 
         end_mode_2d()
         end_texture_mode()

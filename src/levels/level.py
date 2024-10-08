@@ -30,7 +30,7 @@ class Level:
         self.enemies = []
         self.active_enemies = []
 
-    def update(self):
+    def update_frame(self):
         self._update_enemies()
     
     
@@ -67,38 +67,33 @@ class Level:
                     self.enemies.append(enemy)
 
 
-    def draw(self):
+    def draw_frame(self):
         self._draw_world()
         self._draw_enemies()
 
     def _draw_world(self):
-        proyections = self.world.get_proyections()
+        proyections = self.world.proyections
         for i in range(16):
-            draw_circle(int(self.world.x[i]), int(self.world.y[i]), 2, self.level_color)
-            border_vec = Vector2(self.world.x[i], self.world.y[i])
+            draw_circle_v(self.world.borders[i], 2, self.level_color)
             draw_circle_v(proyections[i], 1, self.level_color)
-            draw_line_ex(border_vec, proyections[i], 2, self.level_color)
+            draw_line_ex(self.world.borders[i], proyections[i], 2, self.level_color)
             if i > 0:
-                current_vec = Vector2(self.world.x[i], self.world.y[i])
-                previous_vec = Vector2(self.world.x[i - 1], self.world.y[i - 1])
+                current_vec = self.world.borders[i]
+                previous_vec = self.world.borders[i - 1]
                 draw_line_ex(current_vec, previous_vec, 2, self.level_color)
                 draw_line_ex(proyections[i], proyections[i - 1], 1, self.level_color)
         else:
             if self.world.is_loop:
-                current_vec = Vector2(self.world.x[0], self.world.y[0])
-                last_vec = Vector2(self.world.x[-1], self.world.y[-1])
+                current_vec = self.world.borders[0]
+                last_vec = self.world.borders[-1]
                 draw_line_ex(current_vec, last_vec, 2, self.level_color)
                 draw_line_ex(proyections[0], proyections[-1], 1, self.level_color)
 
         # Change color of blaster current border section  -> /_x_\ <-
-        border = Vec2(
-            self.world.x[self.blaster_border], self.world.y[self.blaster_border]
-        )
+        border = self.world.borders[self.blaster_border]
         # /__\* <- right border
-        next_border = Vec2(
-            self.world.x[self.blaster_border - 1], self.world.y[self.blaster_border - 1]
-        )
-        proyections = self.world.get_proyections()
+        next_border = self.world.borders[self.blaster_border - 1]
+        proyections = self.world.proyections
         draw_line_ex(
             border,
             proyections[self.blaster_border],
@@ -118,11 +113,14 @@ class Level:
     
     def _update_enemies(self):
         for enemy in self.active_enemies:
-            enemy.update()
+            enemy.update_frame()
 
-    def rand_enemy_spawn(self):
-        if len(self.enemies):
-            random_enemy_idx = get_random_value(0, len(self.enemies) - 1)
-            enemy = self.enemies[random_enemy_idx]
-            self.active_enemies.append(enemy)
-            self.enemies.remove(enemy)
+    def is_over(self):
+        return not self.active_enemies
+
+    # def rand_enemy_spawn(self):
+    #     if len(self.enemies):
+    #         random_enemy_idx = get_random_value(0, len(self.enemies) - 1)
+    #         enemy = self.enemies[random_enemy_idx]
+    #         self.active_enemies.append(enemy)
+    #         self.enemies.remove(enemy)

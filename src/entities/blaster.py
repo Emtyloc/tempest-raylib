@@ -1,4 +1,4 @@
-from src.shared import TempestColors, SCREEN_CENTER, EventManager
+from src.shared import TempestColors, EventManager
 from pyray import *
 from enum import IntEnum
 from src.utils import Vec2
@@ -44,6 +44,7 @@ class Blaster:
         self.position = Blaster.Position.CENTER
         self.velocity = 60 #Steps for iteration (steps/second)
         self.remain_steps = 0 #Remaining steps for next iteration
+        self.bullets = []
 
     @property
     def border_idx(self):
@@ -55,6 +56,11 @@ class Blaster:
             raise ValueError("Border index cannot be less than 0 or greater than 15.")
         self._border_idx = value
 
+    
+    def shoot(self):
+        pass
+    
+    
     # NOTE: all levels were constructed clock-wise, and appended to the (x,y) list in that order
     # which means that border_idx + 1 jumps to left/clock-wise, and vice-versa.
     def _shift_left(self):
@@ -112,7 +118,7 @@ class Blaster:
         for _ in range(full_steps):
             self._shift_right()
     
-    def update(self):
+    def update_frame(self):
         """
         Checks main loop events e.g. pressed keys.
         """
@@ -128,18 +134,17 @@ class Blaster:
             self.move_right(full_steps)
 
     # TODO: Draw inside Blaster vectors.
-    def draw(self):
+    def draw_frame(self):
         """
         Draw blaster in the world.
         """
 
         # left border -> */__\
-        border = Vec2(self.world.x[self.border_idx], self.world.y[self.border_idx])
+        border = self.world.borders[self.border_idx]
         # /__\* <- right border
-        next_border = Vec2(
-            self.world.x[self.border_idx - 1], self.world.y[self.border_idx - 1]
-        )
+        next_border = self.world.borders[self.border_idx - 1]
         border_line = next_border - border
+        
         # distance from border line and blaster spike (highest point)
         blaster_height = border.distance(next_border) / 4
         tongs_height = blaster_height / 2

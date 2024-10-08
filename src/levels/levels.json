@@ -3,7 +3,7 @@
         "enemies": {
             "Flipper": {
                 "quantity": 10,
-                "velocity": 0.8
+                "velocity": 0.6
             }
         },
         "world": {
@@ -20,6 +20,174 @@
         },
         "world": {
             "name": "square_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "3": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "plus_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "4": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "peanut_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "5": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "cross_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "6": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "triangle_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "7": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "clover_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "8": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "vee_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "9": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "steps_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "10": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "u_shape_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "11": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "line_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "12": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "heart_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "13": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "star_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "14": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "w_shape_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "15": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "broken_v_world",
+            "color": "BLUE_NEON"
+        }
+    },
+    "16": {
+        "enemies": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.8
+            }
+        },
+        "world": {
+            "name": "infinity_world",
             "color": "BLUE_NEON"
         }
     }

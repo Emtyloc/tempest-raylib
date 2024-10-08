@@ -9,13 +9,13 @@ class Flipper(Enemy):
     def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager):
         super().__init__(border_idx, world, velocity, event_manager)
         self.border_idx = get_random_value(1, 15)
-        proyections = self.world.get_proyections()
+        proyections = self.world.proyections
         proy = proyections[self.border_idx]
         next_proy = proyections[self._next_border_idx]
         self.left_anchor = proy
         self.right_anchor = next_proy
         
-    def update(self):
+    def update_frame(self):
         self.move_towards_player()
 
     @property    
@@ -54,6 +54,10 @@ class Flipper(Enemy):
         self.left_anchor = self.left_anchor.move_towards(self.border_v, l_move_distance)
         self.right_anchor = self.right_anchor.move_towards(self.next_border_v, r_move_distance)
 
+    @property
+    def position(self):
+        return self.left_anchor
+    
     def rotate_left(self):
         pass
     
@@ -61,15 +65,7 @@ class Flipper(Enemy):
         pass
 
 
-    def world_update(self, data: dict):
-        self.world = data["world"]
-        proyections = self.world.get_proyections()
-        proy = proyections[self.border_idx]
-        next_proy = proyections[self._next_border_idx]
-        self.left_anchor = proy
-        self.right_anchor = next_proy
-
-    def draw(self):
+    def draw_frame(self):
     
         section_lenght = self.left_anchor.distance(self.right_anchor) #We use this to compute all others
         

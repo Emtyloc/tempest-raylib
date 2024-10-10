@@ -47,7 +47,27 @@ class Level:
     def blaster_border_update(self, data: dict):
         self.blaster_border = data["border_idx"]
     
-    # TODO: Use pydantic models to parse jsons
+    
+    def enemies_factory(self, enemies_data: dict):
+        entities_module = import_module("src.entities")
+        for enemy_name in enemies_data:
+            for _ in range(enemies_data[enemy_name]["quantity"]):
+                # Common enemy class atributes
+                velocity = enemies_data[enemy_name]["velocity"]
+                match enemy_name:
+                    case "Flipper":
+                        enemy = getattr(entities_module, enemy_name)(
+                            border_idx = 0,
+                            world = self.world,
+                            velocity = velocity,
+                            rotates = enemies_data[enemy_name]["rotates"],
+                            event_manager = self.event_manager
+                        )
+                        self.enemies.append(enemy)
+                    case _:
+                        raise Exception(f"You need to implement the switch case for {enemy_name} to be constructed.")
+
+
     def load_level_data(self, level_number: int):
         """
         Load level data extracted from levels.json.
@@ -64,16 +84,8 @@ class Level:
             self.level_color = getattr(tempest_colors, world_data["color"]).rgba()
             
             enemies_data = data.get("enemies")
-            entities_module = import_module("src.entities")
-            for enemy_name in enemies_data:
-                for _ in range(enemies_data[enemy_name]["quantity"]):
-                    enemy = getattr(entities_module, enemy_name)(
-                        border_idx = 0,
-                        world = self.world,
-                        velocity = enemies_data[enemy_name]["velocity"],
-                        event_manager = self.event_manager
-                    )
-                    self.enemies.append(enemy)
+            self.enemies_factory(enemies_data)
+            
             self.spawn_time = data["spawn_time"]
 
 

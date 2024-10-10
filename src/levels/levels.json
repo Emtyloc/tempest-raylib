@@ -3,7 +3,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 10,
-                "velocity": 0.6
+                "velocity": 0.6,
+                "rotates": false
             }
         },
         "world": {
@@ -16,7 +17,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 10,
-                "velocity": 0.6
+                "velocity": 0.6,
+                "rotates": true
             }
         },
         "world": {
@@ -29,7 +31,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -42,7 +45,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -55,7 +59,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -68,7 +73,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -81,7 +87,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -94,7 +101,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -107,7 +115,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -120,7 +129,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -133,7 +143,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -146,7 +157,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -159,7 +171,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -172,7 +185,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -185,7 +199,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {
@@ -198,7 +213,8 @@
         "enemies": {
             "Flipper": {
                 "quantity": 12,
-                "velocity": 1
+                "velocity": 1,
+                "rotates": true
             }
         },
         "world": {

@@ -30,6 +30,9 @@ class Flipper(Enemy):
         self.rotates = rotates
         
     def update_frame(self):
+        if (check_collision_circles(self.left_anchor, 3, self.blaster_border_v, 3) and 
+            check_collision_circles(self.right_anchor, 3, self.next_blaster_border_v, 3)):
+            self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
         match self.position:
             #TODO: make rotation while moving
             case self.Position.UPRIGHT:
@@ -58,7 +61,10 @@ class Flipper(Enemy):
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
 
-    
+    def blaster_border_update(self, data: dict):
+        blaster_border_idx = data["border_idx"]
+        self.blaster_border_v = self.world.borders[blaster_border_idx]
+        self.next_blaster_border_v = self.world.borders[blaster_border_idx - 1]
         
     @property
     def border_v(self):

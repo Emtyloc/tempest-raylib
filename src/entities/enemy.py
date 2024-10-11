@@ -9,6 +9,7 @@ class Enemy:
         self.world = world
         self.velocity = velocity
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+        self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}, border: {self.border_idx}"
@@ -16,6 +17,9 @@ class Enemy:
     def blaster_bullet_update(self, data: dict):
         pass
     
+    def blaster_border_update(self, data: dict):
+        pass
+
     def update_frame(self):
         pass
 

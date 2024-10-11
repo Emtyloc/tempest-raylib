@@ -48,7 +48,9 @@ class Game:
             case GameState.PLAYING:
                 self.blaster.update_frame()
                 self.level.update_frame()
-                if self.level.is_over():
+                if not self.blaster.alive:
+                    self.game_state = GameState.LEVEL_SELECTION
+                elif self.level.is_over():
                     self.current_level += 1
                     self.select_level(self.current_level)
     

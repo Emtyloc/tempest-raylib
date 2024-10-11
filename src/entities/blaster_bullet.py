@@ -34,10 +34,6 @@ class BlasterBullet:
             self.alive = False
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_COLLIDE, self.blaster_bullet_collide)
 
-    @property
-    def collision_pos(self):
-        return self.position
-
     def move_bullet(self):
         proyections = self.world.proyections
         
@@ -64,9 +60,9 @@ class BlasterBullet:
     
     
     def update_frame(self):
+        self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_UPDATE, {"bullet": self})
         self.check_proyection_collision()
         self.move_bullet()
-        self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_UPDATE, {"bullet": self})
 
     def draw_frame(self):
         if self.alive:

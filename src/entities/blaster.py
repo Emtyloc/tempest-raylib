@@ -40,21 +40,24 @@ class Blaster:
         self.world = world
         self.border_idx = world.start_idx
         event_manager.notify(EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx})
+        event_manager.subscribe(EventManager.Topics.BLASTER_DEAD, self.blaster_dead)
 
     def _init_defaults(self) -> None:
+        self.alive = True
         self.position = Blaster.Position.CENTER
         self.velocity = 60 #Steps for iteration (steps/second)
         self.remain_steps = 0 #Remaining steps for next iteration
         
         self.bullets = []
-        self.mag_size = 10 #max acummulated bullets
+        self.mag_size = 5 #max acummulated bullets
         self.current_mag = self.mag_size #bullets in magazine
-        self.reload_time = 0.175 
+        self.reload_time = 0.3 
         self.accum_reload_time = 0
         self.time_btwn_shoots = 0.05
         self.last_shoot_time = 0
     
-
+    def blaster_dead(self, data: dict):
+        self.alive = False
 
     @property
     def border_idx(self):

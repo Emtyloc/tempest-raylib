@@ -3,6 +3,7 @@ from pyray import *
 from enum import IntEnum
 from src.utils import Vec2
 from src.worlds import WorldData
+from src.sounds import SoundManager
 from .blaster_bullet import BlasterBullet
 
 
@@ -34,9 +35,10 @@ class Blaster:
                 return Blaster.Position(prev_idx)
             return Blaster.Position.RIGHT
 
-    def __init__(self, world: WorldData, event_manager: EventManager) -> None:
+    def __init__(self, world: WorldData, event_manager: EventManager, sound_manager: SoundManager) -> None:
         self._init_defaults()
         self.event_manager = event_manager
+        self.sound_manager = sound_manager
         self.world = world
         self.border_idx = world.start_idx
         event_manager.notify(EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx})
@@ -73,6 +75,7 @@ class Blaster:
     def shoot(self):
         bullet = BlasterBullet(self.border_idx, self.world, self.event_manager)
         self.bullets.append(bullet)
+        play_sound(self.sound_manager.get_sound("shot"))
 
     def update_bullets_frame(self):
         for bullet in self.bullets:
@@ -99,6 +102,7 @@ class Blaster:
                 self.event_manager.notify(
                     EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
                 )
+                play_sound(self.sound_manager.get_sound("blaster_move"))
             self.position = self.position.prev_pos()
 
         else:
@@ -109,6 +113,7 @@ class Blaster:
                     self.event_manager.notify(
                         EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
                     )
+                    play_sound(self.sound_manager.get_sound("blaster_move"))
             else:
                 self.position = self.position.prev_pos()
 
@@ -123,6 +128,7 @@ class Blaster:
                 self.event_manager.notify(
                     EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
                 )
+                play_sound(self.sound_manager.get_sound("blaster_move"))
             self.position = self.position.next_pos()
         else:
             if self.position is Blaster.Position.RIGHT:
@@ -132,6 +138,7 @@ class Blaster:
                     self.event_manager.notify(
                         EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx}
                     )
+                    play_sound(self.sound_manager.get_sound("blaster_move"))
             else:
                 self.position = self.position.next_pos()
 

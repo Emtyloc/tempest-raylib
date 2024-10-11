@@ -4,6 +4,7 @@ from pyray import *
 from src.shared import TempestColors, EventManager
 from src.utils import Vec2
 from src.entities import Flipper
+from src.sounds import SoundManager
 import os, json
 from importlib import import_module, resources
 
@@ -22,10 +23,11 @@ class Level:
         LEVEL_READY = 2
     
 
-    def __init__(self, event_manager: EventManager):
+    def __init__(self, event_manager: EventManager, sound_manager: SoundManager):
         self.event_manager = (
             event_manager  # Common API to send/recibe data between objects.
         )
+        self.sound_manager = sound_manager
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
         self.enemies = []
         self.active_enemies = []
@@ -61,7 +63,8 @@ class Level:
                             world = self.world,
                             velocity = velocity,
                             rotates = enemies_data[enemy_name]["rotates"],
-                            event_manager = self.event_manager
+                            event_manager = self.event_manager,
+                            sound_manager = self.sound_manager
                         )
                         self.enemies.append(enemy)
                     case _:

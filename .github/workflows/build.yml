@@ -38,7 +38,7 @@ jobs:
           script-name: main.py
           windows-icon-from-ico: icon.ico
           onefile: true
-          include-data-dir: shaders=shaders
+          include-data-dir: assets=assets
           include-package-data: src.levels
           include-data-files: icon.png=icon.png
           windows-console-mode: disable

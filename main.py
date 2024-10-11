@@ -2,12 +2,13 @@ from pyray import *
 from raylib import ffi
 from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS
 from src.game import Game
+from src.sounds import SoundManager
 import os
 
 
 def init_gloom_shader() -> Shader:
     # Its important to use os.path with dirname(__file__) to make files reachables from .exe/.bin builds.
-    shader_path = os.path.join(os.path.dirname(__file__), "shaders/glsl330/bloom.fs")
+    shader_path = os.path.join(os.path.dirname(__file__), "assets/shaders/glsl330/bloom.fs")
     gloom_shader = load_shader("0", shader_path);
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 11.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
@@ -38,7 +39,13 @@ def main():
     gloom_shader = init_gloom_shader()
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    game = Game()
+    init_audio_device()
+
+    sound_volume = 0.7
+    sound_manager = SoundManager(sound_volume)
+    sound_manager.load_sounds()
+
+    game = Game(sound_manager)
 
     # Main game loop
     while not window_should_close():
@@ -69,6 +76,8 @@ def main():
     unload_shader(gloom_shader)
     unload_render_texture(render_texture)
     unload_image(icon)
+    sound_manager.unload_sounds()
+    close_audio_device()
     close_window()
 
 

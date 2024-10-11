@@ -1,10 +1,12 @@
 from pyray import *
 from src.shared import EventManager
 from src.worlds import WorldData
+from src.sounds import SoundManager
 
 class Enemy:
-    def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager):
+    def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager, sound_manager: SoundManager):
         self.event_manager = event_manager
+        self.sound_manager = sound_manager
         self.border_idx = border_idx
         self.world = world
         self.velocity = velocity

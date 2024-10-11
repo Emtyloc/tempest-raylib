@@ -2,6 +2,7 @@ from enum import IntEnum, auto
 from src.levels import Level
 from src.shared import EventManager, SCREEN_CENTER, TempestColors
 from src.entities import Blaster
+from src.sounds import SoundManager
 from pyray import *
 
 class GameState(IntEnum):
@@ -11,7 +12,8 @@ class GameState(IntEnum):
 
 class Game:
 
-    def __init__(self) -> None:
+    def __init__(self, sound_manager: SoundManager) -> None:
+        self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
         self.current_level = 1
@@ -21,11 +23,11 @@ class Game:
     
     def select_level(self, level_number: int):
         # Init level
-        self.level = Level(self.event_manager)
+        self.level = Level(self.event_manager, self.sound_manager)
         self.level.load_level_data(level_number)
         
         # Init Player
-        self.blaster = Blaster(self.level.world, self.event_manager)
+        self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager)
 
         self.game_state = GameState.PLAYING
 
@@ -66,9 +68,4 @@ class Game:
             case GameState.PLAYING:
                 self.level.draw_frame()
                 self.blaster.draw_frame()
-
-        
-    
-
-
 

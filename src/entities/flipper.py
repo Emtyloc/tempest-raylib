@@ -3,6 +3,7 @@ from .enemy import Enemy
 from src.utils import Vec2
 from enum import IntEnum, auto
 from src.shared import TempestColors, EventManager
+from src.sounds import SoundManager
 from pyray import *
 import math
 
@@ -13,8 +14,8 @@ class Flipper(Enemy):
         ROTATING_LEFT = auto()
         ROTATING_RIGHT = auto()
 
-    def __init__(self, border_idx: int, world: WorldData, velocity: float, rotates: bool, event_manager: EventManager):
-        super().__init__(border_idx, world, velocity, event_manager)
+    def __init__(self, border_idx: int, world: WorldData, velocity: float, rotates: bool, event_manager: EventManager, sound_manager: SoundManager):
+        super().__init__(border_idx, world, velocity, event_manager, sound_manager)
         if world.is_loop:
             self.border_idx = get_random_value(0, 15)
         else:
@@ -60,6 +61,8 @@ class Flipper(Enemy):
             self.alive = False
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+            play_sound(self.sound_manager.get_sound("enemy_death"))
+
 
     def blaster_border_update(self, data: dict):
         blaster_border_idx = data["border_idx"]

@@ -37,7 +37,7 @@ class Flipper(Enemy):
             #TODO: make rotation while moving
             case self.Position.UPRIGHT:
                 self.move_towards_player()
-                if self.border_v == self.left_anchor:
+                if self.border_v == self.left_anchor and self.next_border_v == self.right_anchor:
                     if get_random_value(0, 1) == 0:
                         self.position = self.Position.ROTATING_RIGHT
                     else:

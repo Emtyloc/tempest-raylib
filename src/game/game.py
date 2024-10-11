@@ -51,6 +51,7 @@ class Game:
                 if not self.blaster.alive:
                     self.game_state = GameState.LEVEL_SELECTION
                 elif self.level.is_over():
+                    # TODO: check level don't pass 16
                     self.current_level += 1
                     self.select_level(self.current_level)
     

@@ -16,10 +16,6 @@ class Flipper(Enemy):
 
     def __init__(self, border_idx: int, world: WorldData, velocity: float, rotates: bool, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
-        if world.is_loop:
-            self.border_idx = get_random_value(0, 15)
-        else:
-            self.border_idx = get_random_value(1, 15)
         self.alive = True
         proyections = self.world.proyections
         proy = proyections[self.border_idx]
@@ -39,10 +35,20 @@ class Flipper(Enemy):
             case self.Position.UPRIGHT:
                 self.move_towards_player()
                 if self.border_v == self.left_anchor and self.next_border_v == self.right_anchor:
-                    if get_random_value(0, 1) == 0:
-                        self.position = self.Position.ROTATING_RIGHT
-                    else:
-                        self.position = self.Position.ROTATING_LEFT
+                    rand_rotation = get_random_value(0, 1)
+                    # RIGHT
+                    if rand_rotation == 0:
+                        if self.border_idx == 1 and not self.world.is_loop:
+                            self.position = self.Position.ROTATING_LEFT
+                        else:
+                            self.position = self.Position.ROTATING_RIGHT
+                    # LEFT
+                    elif rand_rotation == 1:
+                        if self.border_idx == 15 and not self.world.is_loop:
+                            self.position = self.Position.ROTATING_RIGHT
+                        else:
+                            self.position = self.Position.ROTATING_LEFT
+
             case self.Position.ROTATING_RIGHT:
                 self.rotate_right()
 
@@ -55,7 +61,6 @@ class Flipper(Enemy):
 
     def blaster_bullet_update(self, data: dict):
         bullet = data["bullet"]
-        
         # TODO: check flipper collition when rotating
         if check_collision_circles(bullet.position, bullet.radio, self.left_anchor.lerp(self.right_anchor, 0.5), 2) and self.border_idx == bullet.border_idx:
             self.alive = False
@@ -136,6 +141,8 @@ class Flipper(Enemy):
             self.border_idx = self.border_idx - 1 if self.border_idx - 1 >= 0 else 15
             self.current_rotation = 0
 
+            if self.border_idx == 1 and not self.world.is_loop:
+                self.position = self.Position.ROTATING_LEFT
 
     
     def rotate_left(self):
@@ -166,6 +173,10 @@ class Flipper(Enemy):
             self.right_anchor = self.border_v
             self.border_idx = self.border_idx + 1 if self.border_idx + 1 <= 15 else 0
             self.current_rotation = 0
+            
+            if self.border_idx == 15 and not self.world.is_loop:
+                self.position = self.Position.ROTATING_RIGHT
+
 
 
 

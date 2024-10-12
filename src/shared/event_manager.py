@@ -20,6 +20,9 @@ class EventManager(metaclass=SingletonMeta):
             for listener in self.listeners[event_type]:
                 listener(data)
     
+    def reset(self):
+        self.listeners = {}
+    
     class Topics:
         BLASTER_BORDER_UPDATE = "blaster/border/update"
         BLASTER_BULLET_UPDATE = "blaster/bullet/update"

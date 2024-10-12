@@ -10,12 +10,6 @@ from importlib import import_module, resources
 
 
 class Level:
-    """
-    Level class should handle:
-    - Level states.
-    - World drawing.
-    - Enemies creations / deletions.
-    """
 
     class States(Enum):
         LEVEL_BEGIN = 0
@@ -29,7 +23,7 @@ class Level:
         )
         self.sound_manager = sound_manager
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
-        self.enemies = []
+        self.sleep_enemies = []
         self.active_enemies = []
         self.time_last_spawn = 1
 
@@ -40,10 +34,10 @@ class Level:
     def _spawn_enemy(self):
         self.time_last_spawn += get_frame_time()
         if self.time_last_spawn >= self.spawn_time:
-            if not self.enemies: return
-            random_enemy = self.enemies[get_random_value(0, len(self.enemies) - 1)]
+            if not self.sleep_enemies: return
+            random_enemy = self.sleep_enemies[get_random_value(0, len(self.sleep_enemies) - 1)]
             self.active_enemies.append(random_enemy)
-            self.enemies.remove(random_enemy)
+            self.sleep_enemies.remove(random_enemy)
             self.time_last_spawn -= self.spawn_time
     
     def blaster_border_update(self, data: dict):
@@ -58,15 +52,19 @@ class Level:
                 velocity = enemies_data[enemy_name]["velocity"]
                 match enemy_name:
                     case "Flipper":
+                        if self.world.is_loop:
+                            start_idx = get_random_value(0, 15)
+                        else:
+                            start_idx = get_random_value(1, 15)
                         enemy = getattr(entities_module, enemy_name)(
-                            border_idx = 0,
+                            border_idx = start_idx,
                             world = self.world,
                             velocity = velocity,
                             rotates = enemies_data[enemy_name]["rotates"],
                             event_manager = self.event_manager,
                             sound_manager = self.sound_manager
                         )
-                        self.enemies.append(enemy)
+                        self.sleep_enemies.append(enemy)
                     case _:
                         raise Exception(f"You need to implement the switch case for {enemy_name} to be constructed.")
 
@@ -145,4 +143,4 @@ class Level:
             enemy.update_frame()
 
     def is_over(self):
-        return (not self.active_enemies and not self.enemies)
+        return (not self.active_enemies and not self.sleep_enemies)

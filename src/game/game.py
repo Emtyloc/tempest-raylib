@@ -23,6 +23,8 @@ class Game:
     
     def select_level(self, level_number: int):
         # Init level
+        self.event_manager.reset()
+        
         self.level = Level(self.event_manager, self.sound_manager)
         self.level.load_level_data(level_number)
         
@@ -30,6 +32,7 @@ class Game:
         self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager)
 
         self.game_state = GameState.PLAYING
+
 
     def update_frame(self):
         

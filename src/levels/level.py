@@ -143,4 +143,8 @@ class Level:
             enemy.update_frame()
 
     def is_over(self):
-        return (not self.active_enemies and not self.sleep_enemies)
+        border_flippers = 0
+        for enemy in self.active_enemies:
+            if isinstance(enemy, Flipper) and enemy.position != enemy.Position.UPRIGHT:
+                border_flippers += 1
+        return (border_flippers == len(self.active_enemies) and not self.sleep_enemies)

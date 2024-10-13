@@ -3,6 +3,7 @@ from src.levels import Level
 from src.shared import EventManager, SCREEN_CENTER, TempestColors
 from src.entities import Blaster
 from src.sounds import SoundManager
+from src.score import ScoreManager
 from pyray import *
 
 class GameState(IntEnum):
@@ -16,6 +17,7 @@ class Game:
         self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
+        self.score_manager = ScoreManager(self.event_manager)
         self.current_level = 1
 
     def goto_level_selection(self):
@@ -23,7 +25,9 @@ class Game:
     
     def select_level(self, level_number: int):
         # Init level
-        self.event_manager.reset()
+        # TODO: improve handle game logics to avoid bugs as ghost entities, triggering events.
+        
+        self.event_manager.level_reset()
         
         self.level = Level(self.event_manager, self.sound_manager)
         self.level.load_level_data(level_number)
@@ -71,4 +75,5 @@ class Game:
             case GameState.PLAYING:
                 self.level.draw_frame()
                 self.blaster.draw_frame()
+                self.score_manager.draw_frame()
 

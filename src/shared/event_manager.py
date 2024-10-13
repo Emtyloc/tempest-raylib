@@ -23,8 +23,19 @@ class EventManager(metaclass=SingletonMeta):
     def reset(self):
         self.listeners = {}
     
+    def reset_topic(self, event_type: str):
+        if event_type in self.listeners:
+            del self.listeners[event_type]
+
+    def level_reset(self):
+        self.reset_topic(self.Topics.BLASTER_BORDER_UPDATE)
+        self.reset_topic(self.Topics.BLASTER_BULLET_UPDATE)
+        self.reset_topic(self.Topics.BLASTER_BULLET_COLLIDE)
+        self.reset_topic(self.Topics.BLASTER_DEAD)
+    
     class Topics:
         BLASTER_BORDER_UPDATE = "blaster/border/update"
         BLASTER_BULLET_UPDATE = "blaster/bullet/update"
         BLASTER_BULLET_COLLIDE = "blaster/bullet/collide"
         BLASTER_DEAD = "blaster/dead"
+        SCORE_UPDATE = "score/update"

@@ -17,6 +17,7 @@ class Flipper(Enemy):
     def __init__(self, border_idx: int, world: WorldData, velocity: float, rotates: bool, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
         self.alive = True
+        self.score = 150
         proyections = self.world.proyections
         proy = proyections[self.border_idx]
         next_proy = proyections[self.border_idx - 1]
@@ -66,6 +67,7 @@ class Flipper(Enemy):
             self.alive = False
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+            self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
             play_sound(self.sound_manager.get_sound("enemy_death"))
 
 

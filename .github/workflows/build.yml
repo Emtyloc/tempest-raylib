@@ -52,3 +52,35 @@ jobs:
             build/*.exe
             build/*.bin
             build/*.app/**/*
+
+  release:
+    needs: build  # Espera a que el trabajo de build termine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.sha }}
+          release_name: "Release ${{ github.sha }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload Windows Build
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/*.exe
+          asset_name: windows_build.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux Build
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/*.bin
+          asset_name: linux_build.bin
+          asset_content_type: application/octet-stream

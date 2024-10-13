@@ -17,6 +17,7 @@ class Flipper(Enemy):
     def __init__(self, border_idx: int, world: WorldData, velocity: float, rotates: bool, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
         self.alive = True
+        self.active = False
         self.score = 150
         proyections = self.world.proyections
         proy = proyections[self.border_idx]
@@ -61,10 +62,13 @@ class Flipper(Enemy):
 
 
     def blaster_bullet_update(self, data: dict):
+        if not self.active:
+            return
         bullet = data["bullet"]
         # TODO: check flipper collition when rotating
         if check_collision_circles(bullet.position, bullet.radio, self.left_anchor.lerp(self.right_anchor, 0.5), 2) and self.border_idx == bullet.border_idx:
             self.alive = False
+            self.active = False
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
             self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})

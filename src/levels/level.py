@@ -36,6 +36,7 @@ class Level:
         if self.time_last_spawn >= self.spawn_time:
             if not self.sleep_enemies: return
             random_enemy = self.sleep_enemies[get_random_value(0, len(self.sleep_enemies) - 1)]
+            random_enemy.active = True
             self.active_enemies.append(random_enemy)
             self.sleep_enemies.remove(random_enemy)
             self.time_last_spawn -= self.spawn_time

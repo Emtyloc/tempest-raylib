@@ -5,6 +5,10 @@
                 "quantity": 10,
                 "velocity": 0.6,
                 "rotates": false
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 2.5
             }
         },
         "world": {

@@ -16,5 +16,5 @@ class ScoreManager:
     def draw_frame(self):
         text = str(self.total_score)
         text_size = 40
-        draw_text(text, int(SCREEN_CENTER.x - measure_text(text, text_size) / 2), int(0 + text_size), text_size, TempestColors.GREEN_NEON.rgba())
+        draw_text(text, int(SCREEN_CENTER.x - measure_text(text, text_size) / 2), int(0 + text_size), text_size, TempestColors.GREEN_NEON.rgba)
 

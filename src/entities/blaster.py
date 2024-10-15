@@ -274,11 +274,11 @@ class Blaster:
 
         # Draw outside lines
         # spike
-        draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left, spike, 2, TempestColors.YELLOW_NEON.rgba)
+        draw_line_ex(out_right, spike, 2, TempestColors.YELLOW_NEON.rgba)
         # tong
-        draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba())
-        draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba())
+        draw_line_ex(out_left, left_tong, 2, TempestColors.YELLOW_NEON.rgba)
+        draw_line_ex(out_right, right_tong, 2, TempestColors.YELLOW_NEON.rgba)
 
         # Draw bullets
         self.draw_bullets_frame()

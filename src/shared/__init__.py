@@ -23,5 +23,6 @@ class TempestColors(Enum):
     PURPLE_NEON = Color(191, 64, 191, 255)
     WHITE_NEON = RAYWHITE
 
+    @property
     def rgba(self) -> Color:
         return self.value

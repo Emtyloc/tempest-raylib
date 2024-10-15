@@ -66,6 +66,6 @@ class BlasterBullet:
 
     def draw_frame(self):
         if self.alive:
-            draw_circle_v(self.position, self.radio, TempestColors.YELLOW_NEON.rgba())
+            draw_circle_v(self.position, self.radio, TempestColors.YELLOW_NEON.rgba)
 
 

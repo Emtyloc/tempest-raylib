@@ -203,15 +203,15 @@ class Flipper(Enemy):
         mid_cross_left = self.right_anchor.lerp(self.left_anchor, 6/8) + perp * flipper_height / 2
 
         # Draw cross
-        draw_line_ex(self.left_anchor, cross_right, 2, TempestColors.RED_NEON.rgba())
-        draw_line_ex(self.right_anchor, cross_left, 2, TempestColors.RED_NEON.rgba())
+        draw_line_ex(self.left_anchor, cross_right, 2, TempestColors.RED_NEON.rgba)
+        draw_line_ex(self.right_anchor, cross_left, 2, TempestColors.RED_NEON.rgba)
         
         # Draw mid-cross
-        draw_line_ex(self.left_anchor, mid_cross_left, 2, TempestColors.RED_NEON.rgba())
-        draw_line_ex(cross_left, mid_cross_left, 2, TempestColors.RED_NEON.rgba())
+        draw_line_ex(self.left_anchor, mid_cross_left, 2, TempestColors.RED_NEON.rgba)
+        draw_line_ex(cross_left, mid_cross_left, 2, TempestColors.RED_NEON.rgba)
 
-        draw_line_ex(self.right_anchor, mid_cross_right, 2, TempestColors.RED_NEON.rgba())
-        draw_line_ex(cross_right, mid_cross_right, 2, TempestColors.RED_NEON.rgba())
+        draw_line_ex(self.right_anchor, mid_cross_right, 2, TempestColors.RED_NEON.rgba)
+        draw_line_ex(cross_right, mid_cross_right, 2, TempestColors.RED_NEON.rgba)
 
 
 

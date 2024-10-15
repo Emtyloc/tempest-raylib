@@ -83,7 +83,7 @@ class Level:
             
             shared_module = import_module("src.shared")
             tempest_colors = getattr(shared_module, "TempestColors")
-            self.level_color = getattr(tempest_colors, world_data["color"]).rgba()
+            self.level_color = getattr(tempest_colors, world_data["color"]).rgba
             
             enemies_data = data.get("enemies")
             self.enemies_factory(enemies_data)
@@ -122,13 +122,13 @@ class Level:
             border,
             proyections[self.blaster_border],
             2,
-            TempestColors.YELLOW_NEON.rgba(),
+            TempestColors.YELLOW_NEON.rgba,
         )
         draw_line_ex(
             next_border,
             proyections[self.blaster_border - 1],
             2,
-            TempestColors.YELLOW_NEON.rgba(),
+            TempestColors.YELLOW_NEON.rgba,
         )
 
     def _draw_enemies(self):

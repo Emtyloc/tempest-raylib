@@ -143,7 +143,7 @@ class Flipper(Enemy):
         else:
             self.right_anchor = self.next_border_v + border_line_to_rotate.rotate(max(total_rotation_angle, self.current_rotation))
         
-        if check_collision_circles(self.right_anchor, 4, self.next_section_border_v, 4):
+        if check_collision_circles(self.right_anchor, 5, self.next_section_border_v, 5):
             self.border_idx = self.border_idx - 1 if self.border_idx - 1 >= 0 else 15
             self.current_rotation = 0
 
@@ -174,7 +174,7 @@ class Flipper(Enemy):
         else:
             self.right_anchor = self.border_v + border_line_to_rotate.rotate(max(total_rotation_angle, self.current_rotation))
         
-        if check_collision_circles(self.right_anchor, 4, self.prev_section_border_v, 4):
+        if check_collision_circles(self.right_anchor, 5, self.prev_section_border_v, 5):
             self.left_anchor = self.prev_section_border_v
             self.right_anchor = self.border_v
             self.border_idx = self.border_idx + 1 if self.border_idx + 1 <= 15 else 0

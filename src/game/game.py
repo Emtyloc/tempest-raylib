@@ -204,6 +204,12 @@ class Game:
         worlds_module = import_module("src.worlds")
         world_shape = getattr(worlds_module, world_data["name"])
 
+        shared_module = import_module("src.shared")
+        tempest_colors = getattr(shared_module, "TempestColors")
+        shape_color = getattr(tempest_colors, world_data["color"]).rgba
+
+        is_loop = world_shape.is_loop
+
         max_shape_width = max([vec.x for vec in world_shape.borders]) - min([vec.x for vec in world_shape.borders])
         max_shape_height = max([vec.y for vec in world_shape.borders]) - min([vec.y for vec in world_shape.borders])
 
@@ -225,14 +231,14 @@ class Game:
         offset_y = y_pos + shape_preview_height // 2 - ((max_shape_height * scale) / 2)
 
         # Draw the level shape by connecting the vertices of the borders
-        for i in range(len(world_shape.borders)):
+        for i in range(len(world_shape.borders) - (0 if is_loop else 1)):
             start = world_shape.borders[i]
-            end = world_shape.borders[(i + 1) % len(world_shape.borders)]  
+            end = world_shape.borders[(i + 1) % len(world_shape.borders)] if is_loop else world_shape.borders[i + 1]
 
             draw_line(
                 int(offset_x + (start.x - min_x) * scale), 
                 int(offset_y + (start.y - min_y) * scale), 
                 int(offset_x + (end.x - min_x) * scale), 
                 int(offset_y + (end.y - min_y) * scale), 
-                TempestColors.BLUE_NEON.rgba
+                shape_color
             )

@@ -165,10 +165,8 @@ class Game:
             draw_rectangle(int(x_pos), int(y_pos), int(box_width), int(box_height), inner_color)
 
             shape_preview_height = int(box_height * 0.7)
-            # self.draw_level_shape_preview(level, x_pos, y_pos, box_width, shape_preview_height)
+            self.draw_level_shape_preview(level, x_pos, y_pos, box_width, shape_preview_height)
 
-
-            # Draw the level number in the center of the box
 
             text_y_pos = y_pos + shape_preview_height + 5
             draw_text(str(level), int(x_pos + box_width / 2 - measure_text(str(level), 30) / 2), int(text_y_pos), 30, outer_color)
@@ -199,7 +197,6 @@ class Game:
 
 
     def draw_level_shape_preview(self, level, x_pos, y_pos, box_width, shape_preview_height):
-        # Load the world data for this level
         with resources.open_text('src.levels', 'levels.json') as f:
             data = json.load(f).get(str(level))
 
@@ -207,19 +204,35 @@ class Game:
         worlds_module = import_module("src.worlds")
         world_shape = getattr(worlds_module, world_data["name"])
 
-        # Scale and translate the shape to fit within the shape preview area
-        scale = 0.25  # Adjust as necessary to fit the shape into the preview box
-        offset_x = x_pos + box_width // 2  # Center of the preview box horizontally
-        offset_y = y_pos + shape_preview_height // 2  # Center of the preview box vertically
+        max_shape_width = max([vec.x for vec in world_shape.borders]) - min([vec.x for vec in world_shape.borders])
+        max_shape_height = max([vec.y for vec in world_shape.borders]) - min([vec.y for vec in world_shape.borders])
+
+        if max_shape_width == 0:
+            max_shape_width = 1  
+        if max_shape_height == 0:
+            max_shape_height = 1  
+
+
+        # Scale to fit the shape within the box (both width and height)
+        scale_x = (box_width * 0.8) / max_shape_width  
+        scale_y = (shape_preview_height * 0.8) / max_shape_height  
+        scale = min(scale_x, scale_y) 
+
+        # Center the shape within the preview area
+        min_x = min([vec.x for vec in world_shape.borders])
+        min_y = min([vec.y for vec in world_shape.borders])
+        offset_x = x_pos + box_width // 2 - ((max_shape_width * scale) / 2)
+        offset_y = y_pos + shape_preview_height // 2 - ((max_shape_height * scale) / 2)
 
         # Draw the level shape by connecting the vertices of the borders
         for i in range(len(world_shape.borders)):
             start = world_shape.borders[i]
-            end = world_shape.borders[(i + 1) % len(world_shape.borders)]  # Wrap around to the first point
+            end = world_shape.borders[(i + 1) % len(world_shape.borders)]  
+
             draw_line(
-                int(offset_x + start.x * scale), 
-                int(offset_y + start.y * scale), 
-                int(offset_x + end.x * scale), 
-                int(offset_y + end.y * scale), 
+                int(offset_x + (start.x - min_x) * scale), 
+                int(offset_y + (start.y - min_y) * scale), 
+                int(offset_x + (end.x - min_x) * scale), 
+                int(offset_y + (end.y - min_y) * scale), 
                 TempestColors.BLUE_NEON.rgba
             )

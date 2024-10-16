@@ -1,10 +1,9 @@
 {
     "1": {
         "enemies": {
-            "Flipper": {
+            "Tanker": {
                 "quantity": 10,
-                "velocity": 0.6,
-                "rotates": false
+                "velocity": 0.9
             }
         },
         "world": {

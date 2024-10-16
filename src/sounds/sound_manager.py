@@ -12,6 +12,7 @@ class SoundManager:
         self.sounds['blaster_move'] = load_sound(os.path.join(base_path, "tick.wav"))
         self.sounds['enemy_bullet'] = load_sound(os.path.join(base_path, "bullet.wav"))
         self.sounds['enemy_death'] = load_sound(os.path.join(base_path, "flippershot.wav"))
+        self.sounds['super_zapper'] = load_sound(os.path.join(base_path, "zap.wav"))
 
         self.set_sounds_volume()
     

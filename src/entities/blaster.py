@@ -57,6 +57,8 @@ class Blaster:
         self.accum_reload_time = 0
         self.time_btwn_shoots = 0.05
         self.last_shoot_time = 0
+
+        self.zapper_count = 1
     
     def blaster_dead(self, data: dict):
         self.alive = False
@@ -182,6 +184,11 @@ class Blaster:
                 self.shoot()
                 self.current_mag -= 1
                 self.last_shoot_time = 0
+        
+        if is_key_pressed(KeyboardKey.KEY_SPACE):
+            if self.zapper_count > 0:
+                self.event_manager.notify(EventManager.Topics.SUPER_ZAPPER, {})
+                self.zapper_count -= 1
 
     # TODO: Draw inside Blaster vectors.
     def draw_frame(self):

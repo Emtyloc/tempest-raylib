@@ -1,8 +1,6 @@
-from enum import Enum
-from src.worlds import WorldData
+from enum import Enum, auto
 from pyray import *
 from src.shared import TempestColors, EventManager
-from src.utils import Vec2
 from src.entities import Flipper
 from src.sounds import SoundManager
 import os, json
@@ -12,9 +10,9 @@ from importlib import import_module, resources
 class Level:
 
     class States(Enum):
-        LEVEL_BEGIN = 0
-        LEVEL_COMPLETE = 1
-        LEVEL_READY = 2
+        LEVEL_BEGIN = auto()
+        LEVEL_COMPLETE = auto()
+        LEVEL_READY = auto()
     
 
     def __init__(self, event_manager: EventManager, sound_manager: SoundManager):
@@ -23,13 +21,51 @@ class Level:
         )
         self.sound_manager = sound_manager
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
+        self.event_manager.subscribe(EventManager.Topics.SUPER_ZAPPER, self.super_zapper)
         self.sleep_enemies = []
         self.active_enemies = []
         self.time_last_spawn = 1
+        self._super_zapper_init()
+    
+    def _super_zapper_init(self):
+        self.super_zap_active = False
+        self.super_zap_duration = 0.5 #seg
+        self.super_zap_color_changes = 8 #how many time color changes
+        self.last_super_zap_time = 0
+        self.last_color_change_time = 0
+        self.zap_color_idx = 0
+        self.zap_colors = [
+            TempestColors.WHITE_NEON.rgba,
+            TempestColors.RED_NEON.rgba,
+            TempestColors.GREEN_NEON.rgba,
+        ]
+
+
 
     def update_frame(self):
         self._spawn_enemy()
         self._update_enemies()
+
+        if self.super_zap_active:
+            self.update_zap_animation()
+    
+    def update_zap_animation(self):
+        self.last_super_zap_time += get_frame_time()
+        self.last_color_change_time += get_frame_time()
+        if self.last_color_change_time >= self.super_zap_duration / self.super_zap_color_changes:
+            if self.zap_color_idx == 3:
+                self.level_color == self.original_lvl_color
+                self.zap_color_idx = 0
+            else:
+                self.level_color = self.zap_colors[self.zap_color_idx]
+                self.zap_color_idx += 1
+            self.last_color_change_time = 0
+            play_sound(self.sound_manager.get_sound("super_zapper"))
+
+        if self.last_super_zap_time >= self.super_zap_duration:
+            self.super_zap_active = False
+            self.level_color = self.original_lvl_color
+            self.last_super_zap_time = 0
     
     def _spawn_enemy(self):
         self.time_last_spawn += get_frame_time()
@@ -44,6 +80,10 @@ class Level:
     def blaster_border_update(self, data: dict):
         self.blaster_border = data["border_idx"]
     
+    def super_zapper(self, data: dict):
+        # HERE WE RECIEVE THE SUPPER ZAPPER EVENT
+        play_sound(self.sound_manager.get_sound("super_zapper"))
+        self.super_zap_active = True
     
     def enemies_factory(self, enemies_data: dict):
         entities_module = import_module("src.entities")
@@ -83,7 +123,8 @@ class Level:
             
             shared_module = import_module("src.shared")
             tempest_colors = getattr(shared_module, "TempestColors")
-            self.level_color = getattr(tempest_colors, world_data["color"]).rgba
+            self.original_lvl_color = getattr(tempest_colors, world_data["color"]).rgba
+            self.level_color = self.original_lvl_color
             
             enemies_data = data.get("enemies")
             self.enemies_factory(enemies_data)

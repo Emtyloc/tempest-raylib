@@ -79,6 +79,13 @@ class Flipper(Enemy):
         blaster_border_idx = data["border_idx"]
         self.blaster_border_v = self.world.borders[blaster_border_idx]
         self.next_blaster_border_v = self.world.borders[blaster_border_idx - 1]
+    
+    def super_zapper(self, data):
+        if not self.active:
+            return
+        self.alive = False
+        self.active = False
+        self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
         
     @property
     def border_v(self):

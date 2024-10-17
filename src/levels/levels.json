@@ -1,9 +1,10 @@
 {
     "1": {
         "enemies": {
-            "Fuseball": {
-                "quantity": 3,
-                "velocity": 0.05
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 0.9
+
             }
         },
         "world": {

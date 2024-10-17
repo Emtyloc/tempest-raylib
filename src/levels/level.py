@@ -22,6 +22,7 @@ class Level:
         self.sound_manager = sound_manager
         self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
         self.event_manager.subscribe(EventManager.Topics.SUPER_ZAPPER, self.super_zapper)
+        self.event_manager.subscribe(EventManager.Topics.SPAWN_ENEMY, self.spawn_enemy_flipper)
         self.sleep_enemies = []
         self.active_enemies = []
         self.time_last_spawn = 1
@@ -76,6 +77,23 @@ class Level:
             self.active_enemies.append(random_enemy)
             self.sleep_enemies.remove(random_enemy)
             self.time_last_spawn -= self.spawn_time
+
+    def spawn_enemy_flipper(self, data: dict):
+        enemy = Flipper(
+            border_idx = data["border_idx"],
+            world = self.world,
+            velocity = data["velocity"],
+            rotates = data["rotates"],
+            event_manager = self.event_manager,
+            sound_manager = self.sound_manager
+        )
+        border_idx = data["border_idx"]
+        enemy.active = True
+        #TODO: create function to calculate the anchor for the flipper
+        
+        
+
+        self.active_enemies.append(enemy)
     
     def blaster_border_update(self, data: dict):
         self.blaster_border = data["border_idx"]
@@ -106,6 +124,19 @@ class Level:
                             sound_manager = self.sound_manager
                         )
                         self.sleep_enemies.append(enemy)
+
+                    case "Tanker":
+                        if self.world.is_loop:
+                            start_idx = get_random_value(0, 15)
+                        else:
+                            start_idx = get_random_value(1, 15)
+                            
+                        enemy = getattr(entities_module, enemy_name)(
+                            border_idx = start_idx,
+                            world = self.world,
+                            velocity = velocity,
+                            event_manager = self.event_manager,
+                            sound_manager = self.sound_manager
                     case "Fuseball":
                         # Generar un índice aleatorio para los vértices del borde
                         start_idx = get_random_value(0, len(self.world.borders) - 1)

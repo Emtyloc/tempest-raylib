@@ -33,10 +33,48 @@ class Tanker(Enemy):
         match self.position:
             case self.Position.UPRIGHT:
                 self.move_towards_player()
+                if self.border_v == self.left_anchor and self.next_border_v == self.right_anchor:
+                    self.death_by_border_colision()
             case _:
                 raise Exception("Invalid position")
             
-            
+    def death_by_border_colision(self):
+        self.alive = False
+        self.active = False
+        self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+        self.spawn_flippers_proyections()
+
+        
+    def death_by_blaster_colision(self):
+        self.alive = False
+        self.active = False
+        self.spawn_flippers_proyections()
+        self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
+
+
+    def spawn_flippers_proyections(self):
+        if self.world.is_loop:
+            if self.border_idx == 0:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 15, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+            elif self.border_idx == 15:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 14, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 0, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+            else:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx - 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx + 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+        else:
+            if self.border_idx == 0:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 2, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+            elif self.border_idx == 15:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 14, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 13, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+            else:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx - 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx + 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+
+
     def blaster_bullet_update(self, data: dict):
         if not self.active:
             return
@@ -50,6 +88,8 @@ class Tanker(Enemy):
             self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
             play_sound(self.sound_manager.get_sound("enemy_death"))
             #generate two new enemies 
+            #TODO refactor this
+            self.spawn_flippers_proyections()
 
 
     def blaster_border_update(self, data: dict):

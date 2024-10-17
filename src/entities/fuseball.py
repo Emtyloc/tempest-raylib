@@ -103,7 +103,7 @@ class Fuseball(Enemy):
 
     def handle_collision_with_player(self):
         """ Lógica cuando colisiona con el jugador """
-        print("Jugador impactado por una Fuseball!")
+        play_sound(self.sound_manager.get_sound("enemy_death"))
         self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
         self.alive = False
 
@@ -111,9 +111,9 @@ class Fuseball(Enemy):
         """ Maneja colisiones con disparos del jugador """
         bullet = data["bullet"]
         if check_collision_circles(bullet.position, bullet.radio, self.position, 10):
-            print("Fuseball destruida por un blaster!")
             self.alive = False
             self.active = False
+            play_sound(self.sound_manager.get_sound("enemy_death"))
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
     

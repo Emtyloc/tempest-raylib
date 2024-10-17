@@ -31,7 +31,8 @@ class Flipper(Enemy):
     def update_frame(self):
         if (check_collision_circles(self.left_anchor, 3, self.blaster_border_v, 3) and 
             check_collision_circles(self.right_anchor, 3, self.next_blaster_border_v, 3)):
-            self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
+            self.dead_by_collision()
+
         match self.position:
             #TODO: make rotation while moving
             case self.Position.UPRIGHT:
@@ -67,13 +68,22 @@ class Flipper(Enemy):
         bullet = data["bullet"]
         # TODO: check flipper collition when rotating
         if check_collision_circles(bullet.position, bullet.radio, self.left_anchor.lerp(self.right_anchor, 0.5), 2) and self.border_idx == bullet.border_idx:
-            self.alive = False
-            self.active = False
-            self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
-            self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
-            self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
-            play_sound(self.sound_manager.get_sound("enemy_death"))
+            self.dead_by_bullet(bullet)
 
+    def dead_by_bullet(self, bullet):
+        self.alive = False
+        self.active = False
+        self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
+        self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+        self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
+        play_sound(self.sound_manager.get_sound("enemy_death"))
+    
+    def dead_by_collision(self):
+        self.alive = False
+        self.active = False
+        self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
+        self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+        play_sound(self.sound_manager.get_sound("enemy_death"))
 
     def blaster_border_update(self, data: dict):
         blaster_border_idx = data["border_idx"]

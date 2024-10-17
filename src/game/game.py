@@ -7,6 +7,7 @@ from src.shared import EventManager, SCREEN_CENTER, TempestColors, SCREEN_WIDTH
 from src.entities import Blaster
 from src.sounds import SoundManager
 from src.score import ScoreManager
+from src.utils import Vec2
 from pyray import *
 
 class GameState(IntEnum):
@@ -20,7 +21,6 @@ class Game:
         self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
-        self.score_manager = ScoreManager(self.event_manager)
         self.current_level = 1
         self.max_level = 16  # Set maximum number of levels
         self.min_level = 1
@@ -28,16 +28,18 @@ class Game:
 
     def goto_level_selection(self):
         self.game_state = GameState.LEVEL_SELECTION
-    
+
     def select_level(self, level_number: int):
         # Init level
         # TODO: improve handle game logics to avoid bugs as ghost entities, triggering events.
-        
+
         self.event_manager.level_reset()
-        
+
         self.level = Level(self.event_manager, self.sound_manager)
         self.level.load_level_data(level_number)
-        
+
+        self.score_manager = ScoreManager(self.event_manager)
+
         # Init Player
         self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager)
 
@@ -45,7 +47,7 @@ class Game:
 
 
     def update_frame(self):
-        
+
         match self.game_state:
             case GameState.START_SCREEN:
                 if is_key_pressed(KeyboardKey.KEY_ENTER):
@@ -71,7 +73,7 @@ class Game:
                 elif self.level.is_over():
                     self.current_level = min(self.current_level + 1, self.max_level)
                     self.select_level(self.current_level)
-    
+
     def draw_start_screen(self):
         # Define font sizes and padding
         H1_SIZE_px = 40
@@ -84,14 +86,14 @@ class Game:
         x_pos = int(SCREEN_CENTER.x - measure_text(title, H1_SIZE_px) / 2)
         y_pos = int(SCREEN_CENTER.y - H1_SIZE_px)
         draw_text(title, x_pos, y_pos, H1_SIZE_px, TempestColors.PURPLE_NEON.rgba)
-        
+
         # Draw blinking sub-title
         sub_title = "PRESS ENTER"
         pad_top = PAD_TOP_CENTER
         x_pos = int(SCREEN_CENTER.x - measure_text(sub_title, H2_SIZE_px) / 2)
         y_pos = int(SCREEN_CENTER.y - H2_SIZE_px + pad_top)
         draw_text(sub_title, x_pos, y_pos, H2_SIZE_px, TempestColors.TURQUOISE_NEON.rgba)
-        
+
         # Draw controls title
         controls_title = "CONTROLS"
         pad_top = PAD_TOP_CENTER * 3
@@ -136,13 +138,13 @@ class Game:
         title = "SELECT LEVEL"
         draw_text(title, int(SCREEN_CENTER.x - measure_text(title, 40) / 2), int(SCREEN_CENTER.y - 100), 40, TempestColors.TURQUOISE_NEON.rgba)
 
-        box_width = 80  
+        box_width = 80
         box_height = 120
-        box_padding = 20  
-        border_size = 5  
+        box_padding = 20
+        border_size = 5
 
         num_levels = self.max_level - self.min_level + 1
-        visible_levels = min(num_levels, 5)  
+        visible_levels = min(num_levels, 5)
         start_x = SCREEN_CENTER.x - (visible_levels * (box_width + box_padding)) // 2
 
         offset = (self.selected_level - (self.min_level + visible_levels // 2)) * (box_width + box_padding)
@@ -193,8 +195,36 @@ class Game:
                 self.level.draw_frame()
                 self.blaster.draw_frame()
                 self.score_manager.draw_frame()
+                self.draw_blaster_lives()
 
+    def draw_blaster_lives(self):
+        TOP_PADDING_px = 60
 
+        LIVE_WIDTH_px = 30
+
+        REFERENCE_x_px = int(SCREEN_CENTER.x / 6)
+        
+        for n in range(1, self.blaster.lives + 1):
+            left_anchor_v = Vec2(REFERENCE_x_px * n, TOP_PADDING_px)
+            right_anchor_v = Vec2(REFERENCE_x_px * n + LIVE_WIDTH_px, TOP_PADDING_px)
+            height = 10
+            tong_height = 5
+
+            blaster_tip_v = left_anchor_v.lerp(right_anchor_v, 0.5)
+            blaster_tip_v = Vec2(blaster_tip_v.x, blaster_tip_v.y + height)
+
+            left_tong_v = left_anchor_v.lerp(right_anchor_v, 0.3)
+            left_tong_v = Vec2(left_tong_v.x, left_tong_v.y - tong_height)
+            
+            right_tong_v = left_anchor_v.lerp(right_anchor_v, 0.7)
+            right_tong_v = Vec2(right_tong_v.x, right_tong_v.y - tong_height)
+
+            draw_line_ex(left_anchor_v, blaster_tip_v, 3, TempestColors.YELLOW_NEON.rgba)
+            draw_line_ex(right_anchor_v, blaster_tip_v, 3, TempestColors.YELLOW_NEON.rgba)
+            
+            draw_line_ex(left_anchor_v, left_tong_v, 3, TempestColors.YELLOW_NEON.rgba)
+            draw_line_ex(right_anchor_v, right_tong_v, 3, TempestColors.YELLOW_NEON.rgba)
+    
 
     def draw_level_shape_preview(self, level, x_pos, y_pos, box_width, shape_preview_height):
         with resources.open_text('src.levels', 'levels.json') as f:
@@ -214,15 +244,15 @@ class Game:
         max_shape_height = max([vec.y for vec in world_shape.borders]) - min([vec.y for vec in world_shape.borders])
 
         if max_shape_width == 0:
-            max_shape_width = 1  
+            max_shape_width = 1
         if max_shape_height == 0:
-            max_shape_height = 1  
+            max_shape_height = 1
 
 
         # Scale to fit the shape within the box (both width and height)
-        scale_x = (box_width * 0.8) / max_shape_width  
-        scale_y = (shape_preview_height * 0.8) / max_shape_height  
-        scale = min(scale_x, scale_y) 
+        scale_x = (box_width * 0.8) / max_shape_width
+        scale_y = (shape_preview_height * 0.8) / max_shape_height
+        scale = min(scale_x, scale_y)
 
         # Center the shape within the preview area
         min_x = min([vec.x for vec in world_shape.borders])
@@ -236,9 +266,9 @@ class Game:
             end = world_shape.borders[(i + 1) % len(world_shape.borders)] if is_loop else world_shape.borders[i + 1]
 
             draw_line(
-                int(offset_x + (start.x - min_x) * scale), 
-                int(offset_y + (start.y - min_y) * scale), 
-                int(offset_x + (end.x - min_x) * scale), 
-                int(offset_y + (end.y - min_y) * scale), 
+                int(offset_x + (start.x - min_x) * scale),
+                int(offset_y + (start.y - min_y) * scale),
+                int(offset_x + (end.x - min_x) * scale),
+                int(offset_y + (end.y - min_y) * scale),
                 shape_color
             )

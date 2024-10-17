@@ -1,17 +1,17 @@
 {
     "1": {
         "enemies": {
-            "Tanker": {
+            "Flipper": {
                 "quantity": 10,
-                "velocity": 0.9
-
+                "velocity": 0.6,
+                "rotates": true
             }
         },
         "world": {
             "name": "circle_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "2": {
         "enemies": {
@@ -19,6 +19,10 @@
                 "quantity": 10,
                 "velocity": 0.6,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 1,
+                "velocity": 0.9
             }
         },
         "world": {
@@ -29,8 +33,17 @@
     },
     "3": {
         "enemies": {
-            "Fuseball": {
+            "Flipper": {
+                "quantity": 10,
+                "velocity": 0.6,
+                "rotates": true
+            },
+            "Tanker": {
                 "quantity": 3,
+                "velocity": 0.9
+            },
+            "Fuseball": {
+                "quantity": 1,
                 "velocity": 0.1
             }
         },
@@ -46,6 +59,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 5,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 2,
+                "velocity": 0.07
             }
         },
         "world": {
@@ -60,6 +81,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 7,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 2,
+                "velocity": 0.07
             }
         },
         "world": {
@@ -74,6 +103,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 8,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 2,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -88,6 +125,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 9,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -102,6 +147,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -116,6 +169,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -130,6 +191,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -144,6 +213,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -158,6 +235,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -172,6 +257,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -186,6 +279,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -200,6 +301,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {
@@ -214,6 +323,14 @@
                 "quantity": 12,
                 "velocity": 1,
                 "rotates": true
+            },
+            "Tanker": {
+                "quantity": 10,
+                "velocity": 1.1
+            },
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {

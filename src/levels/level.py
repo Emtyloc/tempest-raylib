@@ -137,6 +137,9 @@ class Level:
                             velocity = velocity,
                             event_manager = self.event_manager,
                             sound_manager = self.sound_manager
+                        )
+                        self.sleep_enemies.append(enemy)
+
                     case "Fuseball":
                         # Generar un índice aleatorio para los vértices del borde
                         start_idx = get_random_value(0, len(self.world.borders) - 1)

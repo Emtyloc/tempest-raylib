@@ -29,7 +29,7 @@ class Tanker(Enemy):
     def update_frame(self):
         if (check_collision_circles(self.left_anchor, 3, self.blaster_border_v, 3) and 
             check_collision_circles(self.right_anchor, 3, self.next_blaster_border_v, 3)):
-            self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
+            self.death_by_blaster_colision()
         match self.position:
             case self.Position.UPRIGHT:
                 self.move_towards_player()
@@ -44,13 +44,25 @@ class Tanker(Enemy):
         self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
         self.spawn_flippers_proyections()
 
+    def super_zapper(self, data: dict):
+        if self.active:
+            self.death_by_zapper()
+
+    def death_by_zapper(self):
+        self.alive = False
+        self.active = False
+        self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+        self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
+        #generate two new enemies
+        #TODO refactor this
+        self.spawn_flippers_proyections()
         
     def death_by_blaster_colision(self):
         self.alive = False
         self.active = False
         self.spawn_flippers_proyections()
         self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
-
+        play_sound(self.sound_manager.get_sound("enemy_death"))
 
     def spawn_flippers_proyections(self):
         if self.world.is_loop:
@@ -64,12 +76,12 @@ class Tanker(Enemy):
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx - 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx + 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
         else:
-            if self.border_idx == 0:
-                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+            if self.border_idx == 1:
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 2, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 3, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
             elif self.border_idx == 15:
+                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 15, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 14, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
-                self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": 13, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
             else:
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx - 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})
                 self.event_manager.notify(EventManager.Topics.SPAWN_ENEMY, {"enemy_type": Flipper, "border_idx": self.border_idx + 1, "velocity": self.velocity, "rotates": True, "left_anchor": self.left_anchor, "right_anchor": self.right_anchor})

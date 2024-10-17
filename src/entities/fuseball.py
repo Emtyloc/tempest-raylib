@@ -7,7 +7,6 @@ from pyray import *
 import math
 import random
 
-
 class Fuseball(Enemy):
     class State:
         MOVING_TO_BORDER = 0
@@ -16,25 +15,25 @@ class Fuseball(Enemy):
     def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
         
-        # Iniciar en el centro geométrico de la figura
         self.position = Vec2(SCREEN_CENTER.x, SCREEN_CENTER.y)
+        self.blaster_position = None
         
-        # Proyección inicial hacia la que se moverá
         self.target_position = Vec2(world.proyections[border_idx].x, world.proyections[border_idx].y)
         
-        # Posición final en el borde del nivel
         self.final_position = Vec2(world.borders[border_idx].x, world.borders[border_idx].y)
         
-        self.state = self.State.MOVING_TO_BORDER  # Estado inicial: moviéndose hacia el borde
-        self.velocity = velocity # Velocidad inicial
+        self.state = self.State.MOVING_TO_BORDER
+        self.velocity = velocity
         self.color = TempestColors.PURPLE_NEON.rgba
         self.alive = True
-        self.active = False  # Si el Fuseball está activo o no
+        self.active = False
 
-        # Para el movimiento a lo largo del borde
         self.border_idx = border_idx
-        self.direction = 1 if random.random() < 0.5 else -1  # Dirección aleatoria: 1 (siguiente) o -1 (anterior)
+        self.direction = 1 if random.random() < 0.5 else -1
         self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
+
+        self.event_manager.subscribe(EventManager.Topics.BLASTER_BORDER_UPDATE, self.blaster_border_update)
+        self.event_manager.subscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
 
     def update_frame(self):
         """ Actualiza la posición y el estado del Fuseball """
@@ -42,11 +41,10 @@ class Fuseball(Enemy):
             return
 
         if self.state == self.State.MOVING_TO_BORDER:
-            self.move_to_border()  # Mover hacia el borde
+            self.move_to_border()
         elif self.state == self.State.MOVING_ALONG_BORDER:
-            self.move_along_border()  # Mover a lo largo del borde
+            self.move_along_border()
 
-        # Verifica colisiones con el jugador o con otros elementos
         if self.collides_with_player():
             self.handle_collision_with_player()
 
@@ -61,62 +59,67 @@ class Fuseball(Enemy):
 
             if self.position == self.final_position:
                 self.state = self.State.MOVING_ALONG_BORDER
-                self.velocity /= 2  # Reduce la velocidad para moverse por el borde
+                self.velocity /= 2
         else:
             direction_vec.normalize()
             self.position.x += direction_vec.x * self.velocity
             self.position.y += direction_vec.y * self.velocity
 
     def move_along_border(self):
-        """ Mueve el Fuseball a lo largo del borde de manera continua en una dirección aleatoria """
+        """ Mueve el Fuseball a lo largo del borde de manera continua """
         current_border = Vec2(self.world.borders[self.border_idx].x, self.world.borders[self.border_idx].y)
         next_border = Vec2(self.world.borders[self.next_border_idx].x, self.world.borders[self.next_border_idx].y)
         
-        # Vector de dirección entre los dos bordes
         direction_vec = Vec2(next_border.x - current_border.x, next_border.y - current_border.y)
         distance = direction_vec.length()
-        
-        print(f"distance: {distance}, current: {current_border}, next: {next_border}")
-        
-        # Si la distancia al siguiente borde es menor que la velocidad, ajusta la posición
+
         if distance < self.velocity:
-            # Mueve la Fuseball al borde exacto sin sobrepasarlo
             self.position = Vec2(next_border.x, next_border.y)
-            
-            # Actualiza los índices para que se mueva al siguiente o anterior borde
             self.border_idx = self.next_border_idx
-            self.direction = 1 if random.random() < 0.5 else -1  # Cambia aleatoriamente la dirección en cada borde
+            self.direction = 1 if random.random() < 0.5 else -1
             self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
-        
         else:
-            # Mueve la Fuseball gradualmente hacia el siguiente borde
             direction_vec.normalize()
             self.position.x += direction_vec.x * self.velocity
             self.position.y += direction_vec.y * self.velocity
 
-            # Verificación adicional para evitar quedarse en el mismo borde indefinidamente
             if abs(self.position.x - next_border.x) < 0.1 and abs(self.position.y - next_border.y) < 0.1:
                 self.position = Vec2(next_border.x, next_border.y)
                 self.border_idx = self.next_border_idx
                 self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
+
+    def blaster_border_update(self, data: dict):
+        """ Actualiza la posición del jugador cuando cambia de borde """
+        blaster_border_idx = data["border_idx"]
+        self.blaster_position = self.world.borders[blaster_border_idx]  # Actualiza la posición del jugador según su borde actual
+
+    def collides_with_player(self):
+        """ Verifica si hay colisión con el jugador usando la posición actualizada del evento """
+        if self.blaster_position:
+            return check_collision_circles(self.position, 10, self.blaster_position, 10)  # Verifica si las posiciones están lo suficientemente cerca
+        return False
+
+    def handle_collision_with_player(self):
+        """ Lógica cuando colisiona con el jugador """
+        print("Jugador impactado por una Fuseball!")
+        self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
+        self.alive = False
+
+    def blaster_bullet_update(self, data: dict):
+        """ Maneja colisiones con disparos del jugador """
+        bullet = data["bullet"]
+        if check_collision_circles(bullet.position, bullet.radio, self.position, 10):
+            print("Fuseball destruida por un blaster!")
+            self.alive = False
+            self.active = False
+            self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
+            self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
 
     def draw_frame(self):
         """ Dibuja el Fuseball en la pantalla """
         if self.active:
             draw_circle(int(self.position.x), int(self.position.y), 10, self.color)
 
-    def collides_with_player(self):
-        """ Lógica de colisión con el jugador """
-        return False
-
-    def handle_collision_with_player(self):
-        """ Lógica cuando colisiona con el jugador """
-        self.alive = False
-
-    def blaster_bullet_update(self, data: dict):
-        """ Evento que maneja la colisión con disparos """
-        pass
-
-    def blaster_border_update(self, data: dict):
-        """ Evento que maneja la actualización del borde del blaster """
-        pass
+    def destroy(self):
+        """ Desuscribirse de eventos cuando la Fuseball es destruida """
+        self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)

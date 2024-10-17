@@ -18,6 +18,8 @@ class Fuseball(Enemy):
         self.position = Vec2(SCREEN_CENTER.x, SCREEN_CENTER.y)
         self.blaster_position = None
         
+        self.score = 250
+        
         self.target_position = Vec2(world.proyections[border_idx].x, world.proyections[border_idx].y)
         
         self.final_position = Vec2(world.borders[border_idx].x, world.borders[border_idx].y)
@@ -62,8 +64,8 @@ class Fuseball(Enemy):
                 self.velocity /= 2
         else:
             direction_vec.normalize()
-            self.position.x += direction_vec.x * self.velocity
-            self.position.y += direction_vec.y * self.velocity
+            self.position.x += direction_vec.x * self.velocity * get_frame_time()
+            self.position.y += direction_vec.y * self.velocity * get_frame_time()
 
     def move_along_border(self):
         """ Mueve el Fuseball a lo largo del borde de manera continua """
@@ -80,8 +82,8 @@ class Fuseball(Enemy):
             self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
         else:
             direction_vec.normalize()
-            self.position.x += direction_vec.x * self.velocity
-            self.position.y += direction_vec.y * self.velocity
+            self.position.x += direction_vec.x * self.velocity * get_frame_time()
+            self.position.y += direction_vec.y * self.velocity * get_frame_time()
 
             if abs(self.position.x - next_border.x) < 0.1 and abs(self.position.y - next_border.y) < 0.1:
                 self.position = Vec2(next_border.x, next_border.y)
@@ -101,7 +103,7 @@ class Fuseball(Enemy):
 
     def handle_collision_with_player(self):
         """ Lógica cuando colisiona con el jugador """
-        print("Jugador impactado por una Fuseball!")
+        play_sound(self.sound_manager.get_sound("enemy_death"))
         self.event_manager.notify(EventManager.Topics.BLASTER_DEAD, {})
         self.alive = False
 
@@ -109,11 +111,18 @@ class Fuseball(Enemy):
         """ Maneja colisiones con disparos del jugador """
         bullet = data["bullet"]
         if check_collision_circles(bullet.position, bullet.radio, self.position, 10):
-            print("Fuseball destruida por un blaster!")
             self.alive = False
             self.active = False
+            play_sound(self.sound_manager.get_sound("enemy_death"))
             self.event_manager.notify(EventManager.Topics.BLASTER_BULLET_COLLIDE, {"bullet": bullet})
             self.event_manager.unsubscribe(EventManager.Topics.BLASTER_BULLET_UPDATE, self.blaster_bullet_update)
+    
+    def super_zapper(self, data):
+        if not self.active:
+            return
+        self.alive = False
+        self.active = False
+        self.event_manager.notify(EventManager.Topics.SCORE_UPDATE, {"score": self.score})
 
     def draw_frame(self):
         """ Dibuja el Fuseball en la pantalla """

@@ -1,6 +1,10 @@
 {
     "1": {
         "enemies": {
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 1
+            },
             "Flipper": {
                 "quantity": 10,
                 "velocity": 0.6,
@@ -40,6 +44,7 @@
             },
             "Tanker": {
                 "quantity": 3,
+                "velocity": 1
                 "velocity": 0.9
             },
             "Fuseball": {

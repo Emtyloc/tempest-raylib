@@ -21,6 +21,7 @@ class Game:
         self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
+        self.score_manager = ScoreManager(self.event_manager)
         self.current_level = 1
         self.max_level = 16  # Set maximum number of levels
         self.min_level = 1
@@ -37,8 +38,6 @@ class Game:
 
         self.level = Level(self.event_manager, self.sound_manager)
         self.level.load_level_data(level_number)
-
-        self.score_manager = ScoreManager(self.event_manager)
 
         # Init Player
         self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager)

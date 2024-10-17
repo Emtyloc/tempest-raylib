@@ -1,12 +1,8 @@
 {
     "1": {
         "enemies": {
-            "Fuseball": {
-                "quantity": 3,
-                "velocity": 1
-            },
             "Flipper": {
-                "quantity": 10,
+                "quantity": 7,
                 "velocity": 0.6,
                 "rotates": true
             }
@@ -15,18 +11,14 @@
             "name": "circle_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 1
+        "spawn_time": 2
     },
     "2": {
         "enemies": {
             "Flipper": {
-                "quantity": 10,
-                "velocity": 0.6,
+                "quantity": 14,
+                "velocity": 0.8,
                 "rotates": true
-            },
-            "Tanker": {
-                "quantity": 1,
-                "velocity": 0.9
             }
         },
         "world": {
@@ -39,17 +31,12 @@
         "enemies": {
             "Flipper": {
                 "quantity": 10,
-                "velocity": 0.6,
+                "velocity": 0.8,
                 "rotates": true
             },
             "Tanker": {
-                "quantity": 3,
-                "velocity": 1
-                "velocity": 0.9
-            },
-            "Fuseball": {
                 "quantity": 1,
-                "velocity": 0.1
+                "velocity": 1
             }
         },
         "world": {
@@ -61,17 +48,17 @@
     "4": {
         "enemies": {
             "Flipper": {
-                "quantity": 12,
-                "velocity": 1,
+                "quantity": 10,
+                "velocity": 0.8,
                 "rotates": true
             },
             "Tanker": {
-                "quantity": 5,
+                "quantity": 2,
                 "velocity": 1.1
             },
             "Fuseball": {
-                "quantity": 2,
-                "velocity": 0.07
+                "quantity": 1,
+                "velocity": 1
             }
         },
         "world": {
@@ -83,17 +70,17 @@
     "5": {
         "enemies": {
             "Flipper": {
-                "quantity": 12,
-                "velocity": 1,
+                "quantity": 10,
+                "velocity": 0.8,
                 "rotates": true
             },
             "Tanker": {
-                "quantity": 7,
+                "quantity": 3,
                 "velocity": 1.1
             },
             "Fuseball": {
-                "quantity": 2,
-                "velocity": 0.07
+                "quantity": 1,
+                "velocity": 1.5
             }
         },
         "world": {
@@ -110,19 +97,19 @@
                 "rotates": true
             },
             "Tanker": {
-                "quantity": 8,
+                "quantity": 3,
                 "velocity": 1.1
             },
             "Fuseball": {
                 "quantity": 2,
-                "velocity": 0.1
+                "velocity": 1.8
             }
         },
         "world": {
             "name": "triangle_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "7": {
         "enemies": {
@@ -137,14 +124,14 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "clover_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "8": {
         "enemies": {
@@ -154,19 +141,19 @@
                 "rotates": true
             },
             "Tanker": {
-                "quantity": 10,
+                "quantity": 9,
                 "velocity": 1.1
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "vee_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "9": {
         "enemies": {
@@ -181,14 +168,14 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2.5
             }
         },
         "world": {
             "name": "steps_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "10": {
         "enemies": {
@@ -203,14 +190,14 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "u_shape_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "11": {
         "enemies": {
@@ -224,15 +211,15 @@
                 "velocity": 1.1
             },
             "Fuseball": {
-                "quantity": 3,
-                "velocity": 0.1
+                "quantity": 4,
+                "velocity": 4
             }
         },
         "world": {
             "name": "line_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "12": {
         "enemies": {
@@ -246,15 +233,15 @@
                 "velocity": 1.1
             },
             "Fuseball": {
-                "quantity": 3,
-                "velocity": 0.1
+                "quantity": 4,
+                "velocity": 2
             }
         },
         "world": {
             "name": "heart_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "13": {
         "enemies": {
@@ -268,15 +255,15 @@
                 "velocity": 1.1
             },
             "Fuseball": {
-                "quantity": 3,
-                "velocity": 0.1
+                "quantity": 4,
+                "velocity": 2
             }
         },
         "world": {
             "name": "star_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "14": {
         "enemies": {
@@ -291,14 +278,14 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "w_shape_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "15": {
         "enemies": {
@@ -313,14 +300,14 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "broken_v_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     },
     "16": {
         "enemies": {
@@ -335,13 +322,13 @@
             },
             "Fuseball": {
                 "quantity": 3,
-                "velocity": 0.1
+                "velocity": 2
             }
         },
         "world": {
             "name": "infinity_world",
             "color": "BLUE_NEON"
         },
-        "spawn_time": 2
+        "spawn_time": 1
     }
 }

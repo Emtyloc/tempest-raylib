@@ -15,14 +15,14 @@ class Fuseball(Enemy):
     def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
         
-        self.position = Vec2(SCREEN_CENTER.x, SCREEN_CENTER.y)
+        self.position = SCREEN_CENTER
         self.blaster_position = None
         
         self.score = 250
         
-        self.target_position = Vec2(world.proyections[border_idx].x, world.proyections[border_idx].y)
+        self.target_position = world.proyections[border_idx]
         
-        self.final_position = Vec2(world.borders[border_idx].x, world.borders[border_idx].y)
+        self.final_position = world.borders[border_idx]
         
         self.state = self.State.MOVING_TO_BORDER
         self.velocity = velocity
@@ -55,40 +55,43 @@ class Fuseball(Enemy):
         direction_vec = Vec2(self.target_position.x - self.position.x, self.target_position.y - self.position.y)
         distance = direction_vec.length()
 
-        if distance < self.velocity:
-            self.position = self.target_position
-            self.target_position = self.final_position
+        move_distance = self.velocity * distance * get_frame_time()
+        self.position = self.position.move_towards(self.target_position, move_distance)
+        
+        if check_collision_circles(self.position, 4, self.target_position, 4):
+            self.state = self.State.MOVING_ALONG_BORDER
+            self.velocity /= 2
+        
+        # if distance < self.velocity:
+        #     self.position = self.target_position
+        #     self.target_position = self.final_position
 
-            if self.position == self.final_position:
-                self.state = self.State.MOVING_ALONG_BORDER
-                self.velocity /= 2
-        else:
-            direction_vec.normalize()
-            self.position.x += direction_vec.x * self.velocity * get_frame_time()
-            self.position.y += direction_vec.y * self.velocity * get_frame_time()
+        #     if check_collision_circles(self.position, 4, self.final_position, 4):
+        #         self.state = self.State.MOVING_ALONG_BORDER
+        #         self.velocity /= 2
+        # else:
+        #     direction_vec.normalize()
+        #     self.position.x += direction_vec.x * self.velocity * get_frame_time()
+        #     self.position.y += direction_vec.y * self.velocity * get_frame_time()
+
 
     def move_along_border(self):
         """ Mueve el Fuseball a lo largo del borde de manera continua """
-        current_border = Vec2(self.world.borders[self.border_idx].x, self.world.borders[self.border_idx].y)
-        next_border = Vec2(self.world.borders[self.next_border_idx].x, self.world.borders[self.next_border_idx].y)
-        
-        direction_vec = Vec2(next_border.x - current_border.x, next_border.y - current_border.y)
-        distance = direction_vec.length()
+        current_border_v = self.world.borders[self.border_idx]
 
-        if distance < self.velocity:
-            self.position = Vec2(next_border.x, next_border.y)
+        next_border_v = Vec2(self.world.borders[self.next_border_idx].x, self.world.borders[self.next_border_idx].y)
+
+        distance = (next_border_v - current_border_v).length()
+        
+        move_distance = self.velocity * distance * get_frame_time()
+
+        self.position = self.position.move_towards(next_border_v, move_distance)
+
+        if check_collision_circles(self.position, 4, next_border_v, 4):
             self.border_idx = self.next_border_idx
             self.direction = 1 if random.random() < 0.5 else -1
             self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
-        else:
-            direction_vec.normalize()
-            self.position.x += direction_vec.x * self.velocity * get_frame_time()
-            self.position.y += direction_vec.y * self.velocity * get_frame_time()
-
-            if abs(self.position.x - next_border.x) < 0.1 and abs(self.position.y - next_border.y) < 0.1:
-                self.position = Vec2(next_border.x, next_border.y)
-                self.border_idx = self.next_border_idx
-                self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
+        
 
     def blaster_border_update(self, data: dict):
         """ Actualiza la posición del jugador cuando cambia de borde """
@@ -109,6 +112,9 @@ class Fuseball(Enemy):
 
     def blaster_bullet_update(self, data: dict):
         """ Maneja colisiones con disparos del jugador """
+        if not self.active:
+            return
+
         bullet = data["bullet"]
         if check_collision_circles(bullet.position, bullet.radio, self.position, 10):
             self.alive = False

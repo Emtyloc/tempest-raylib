@@ -4,7 +4,6 @@ from src.utils import Vec2
 from src.shared import EventManager, TempestColors, SCREEN_CENTER
 from src.sounds import SoundManager
 from pyray import * 
-from pyray import Color
 import math
 import random
 
@@ -16,72 +15,106 @@ class Fuseball(Enemy):
 
     def __init__(self, border_idx: int, world: WorldData, velocity: float, event_manager: EventManager, sound_manager: SoundManager):
         super().__init__(border_idx, world, velocity, event_manager, sound_manager)
-        self.position = Vec2(SCREEN_CENTER.x, SCREEN_CENTER.y)  # Posición inicial en el centro
-        self.target_position = world.borders[border_idx]  # Posición de destino (el borde)
+        
+        # Iniciar en el centro geométrico de la figura
+        self.position = Vec2(SCREEN_CENTER.x, SCREEN_CENTER.y)
+        
+        # Proyección inicial hacia la que se moverá
+        self.target_position = Vec2(world.proyections[border_idx].x, world.proyections[border_idx].y)
+        
+        # Posición final en el borde del nivel
+        self.final_position = Vec2(world.borders[border_idx].x, world.borders[border_idx].y)
+        
         self.state = self.State.MOVING_TO_BORDER  # Estado inicial: moviéndose hacia el borde
-        self.velocity = velocity * 2  # Velocidad rápida inicial
-        self.direction = 1  # Dirección de movimiento
-        self.radius = world.borders[border_idx].distance(SCREEN_CENTER)  # Distancia al borde
-        self.color = TempestColors.PURPLE_NEON.rgba # Color del Fuseball
-        self.alive = True  # Estado de vida del Fuseball
+        self.velocity = velocity # Velocidad inicial
+        self.color = TempestColors.PURPLE_NEON.rgba
+        self.alive = True
         self.active = False  # Si el Fuseball está activo o no
+
+        # Para el movimiento a lo largo del borde
+        self.border_idx = border_idx
+        self.direction = 1 if random.random() < 0.5 else -1  # Dirección aleatoria: 1 (siguiente) o -1 (anterior)
+        self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
 
     def update_frame(self):
         """ Actualiza la posición y el estado del Fuseball """
-        if not self.active:  # Si el Fuseball no está activo, no se mueve
+        if not self.active:
             return
 
         if self.state == self.State.MOVING_TO_BORDER:
-            self.move_to_border()
+            self.move_to_border()  # Mover hacia el borde
         elif self.state == self.State.MOVING_ALONG_BORDER:
-            self.move_along_border()
+            self.move_along_border()  # Mover a lo largo del borde
 
         # Verifica colisiones con el jugador o con otros elementos
         if self.collides_with_player():
             self.handle_collision_with_player()
 
     def move_to_border(self):
-        """ Mueve el Fuseball hacia el borde a gran velocidad """
+        """ Mueve el Fuseball hacia el borde siguiendo las proyecciones """
         direction_vec = Vec2(self.target_position.x - self.position.x, self.target_position.y - self.position.y)
         distance = direction_vec.length()
 
-        if distance < self.velocity:  # Si está cerca del borde, cambia el estado
+        if distance < self.velocity:
             self.position = self.target_position
-            self.state = self.State.MOVING_ALONG_BORDER
-            self.velocity /= 2  # Reduce la velocidad al llegar al borde
+            self.target_position = self.final_position
+
+            if self.position == self.final_position:
+                self.state = self.State.MOVING_ALONG_BORDER
+                self.velocity /= 2  # Reduce la velocidad para moverse por el borde
         else:
             direction_vec.normalize()
             self.position.x += direction_vec.x * self.velocity
             self.position.y += direction_vec.y * self.velocity
 
     def move_along_border(self):
-        """ Mueve el Fuseball entre los segmentos del borde a menor velocidad """
-        self.angle += self.velocity * self.direction
-        self.position.x = self.radius * math.cos(self.angle) + SCREEN_CENTER.x
-        self.position.y = self.radius * math.sin(self.angle) + SCREEN_CENTER.y
+        """ Mueve el Fuseball a lo largo del borde de manera continua en una dirección aleatoria """
+        current_border = Vec2(self.world.borders[self.border_idx].x, self.world.borders[self.border_idx].y)
+        next_border = Vec2(self.world.borders[self.next_border_idx].x, self.world.borders[self.next_border_idx].y)
+        
+        # Vector de dirección entre los dos bordes
+        direction_vec = Vec2(next_border.x - current_border.x, next_border.y - current_border.y)
+        distance = direction_vec.length()
+        
+        print(f"distance: {distance}, current: {current_border}, next: {next_border}")
+        
+        # Si la distancia al siguiente borde es menor que la velocidad, ajusta la posición
+        if distance < self.velocity:
+            # Mueve la Fuseball al borde exacto sin sobrepasarlo
+            self.position = Vec2(next_border.x, next_border.y)
+            
+            # Actualiza los índices para que se mueva al siguiente o anterior borde
+            self.border_idx = self.next_border_idx
+            self.direction = 1 if random.random() < 0.5 else -1  # Cambia aleatoriamente la dirección en cada borde
+            self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
+        
+        else:
+            # Mueve la Fuseball gradualmente hacia el siguiente borde
+            direction_vec.normalize()
+            self.position.x += direction_vec.x * self.velocity
+            self.position.y += direction_vec.y * self.velocity
 
-        # Cambio aleatorio de dirección entre segmentos del borde
-        if random.random() < 0.01:  # Cambiar la dirección aleatoriamente
-            self.direction *= -1
+            # Verificación adicional para evitar quedarse en el mismo borde indefinidamente
+            if abs(self.position.x - next_border.x) < 0.1 and abs(self.position.y - next_border.y) < 0.1:
+                self.position = Vec2(next_border.x, next_border.y)
+                self.border_idx = self.next_border_idx
+                self.next_border_idx = (self.border_idx + self.direction) % len(self.world.borders)
 
     def draw_frame(self):
         """ Dibuja el Fuseball en la pantalla """
-        if self.active:  # Solo dibuja si está activo
+        if self.active:
             draw_circle(int(self.position.x), int(self.position.y), 10, self.color)
 
     def collides_with_player(self):
         """ Lógica de colisión con el jugador """
-        # Aquí puedes agregar la lógica para verificar si colisiona con el jugador
         return False
 
     def handle_collision_with_player(self):
         """ Lógica cuando colisiona con el jugador """
         self.alive = False
-        # Aquí puedes agregar lógica para eliminar o desactivar el Fuseball cuando colisione
 
     def blaster_bullet_update(self, data: dict):
         """ Evento que maneja la colisión con disparos """
-        # Las Fuseballs son invulnerables a los disparos
         pass
 
     def blaster_border_update(self, data: dict):

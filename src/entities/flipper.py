@@ -27,6 +27,8 @@ class Flipper(Enemy):
         self.position = self.Position.UPRIGHT
         self.current_rotation = 0
         self.rotates = rotates
+        self.blaster_border_v  = self.world.borders[0]
+        self.next_blaster_border_v = self.world.borders[0]
         
     def update_frame(self):
         if (check_collision_circles(self.left_anchor, 3, self.blaster_border_v, 3) and 

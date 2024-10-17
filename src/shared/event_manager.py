@@ -33,6 +33,7 @@ class EventManager(metaclass=SingletonMeta):
         self.reset_topic(self.Topics.BLASTER_BULLET_COLLIDE)
         self.reset_topic(self.Topics.BLASTER_DEAD)
         self.reset_topic(self.Topics.SUPER_ZAPPER)
+        self.reset_topic(self.Topics.SPAWN_ENEMY)
     
     class Topics:
         BLASTER_BORDER_UPDATE = "blaster/border/update"
@@ -41,3 +42,4 @@ class EventManager(metaclass=SingletonMeta):
         BLASTER_DEAD = "blaster/dead"
         SCORE_UPDATE = "score/update"
         SUPER_ZAPPER = "blaster/super_zapper"
+        SPAWN_ENEMY = "enemy/spawn"

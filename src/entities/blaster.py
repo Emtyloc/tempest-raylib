@@ -45,6 +45,7 @@ class Blaster:
         event_manager.subscribe(EventManager.Topics.BLASTER_DEAD, self.blaster_dead)
 
     def _init_defaults(self) -> None:
+        self.lives = 3
         self.alive = True
         self.position = Blaster.Position.CENTER
         self.velocity = 60 #Steps for iteration (steps/second)
@@ -61,7 +62,9 @@ class Blaster:
         self.zapper_count = 1
     
     def blaster_dead(self, data: dict):
-        self.alive = False
+        self.lives -= 1
+        if self.lives == 0:
+            self.alive = False
 
     @property
     def border_idx(self):

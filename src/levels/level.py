@@ -137,6 +137,16 @@ class Level:
                             velocity = velocity,
                             event_manager = self.event_manager,
                             sound_manager = self.sound_manager
+                    case "Fuseball":
+                        # Generar un índice aleatorio para los vértices del borde
+                        start_idx = get_random_value(0, len(self.world.borders) - 1)
+                        # Crear una instancia del Fuseball con posiciones aleatorias
+                        enemy = getattr(entities_module, enemy_name)(
+                            border_idx=start_idx,
+                            world=self.world,
+                            velocity=velocity,
+                            event_manager=self.event_manager,
+                            sound_manager=self.sound_manager,
                         )
                         self.sleep_enemies.append(enemy)
                     case _:

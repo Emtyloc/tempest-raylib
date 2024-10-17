@@ -4,6 +4,7 @@
             "Tanker": {
                 "quantity": 10,
                 "velocity": 0.9
+
             }
         },
         "world": {
@@ -28,10 +29,9 @@
     },
     "3": {
         "enemies": {
-            "Flipper": {
-                "quantity": 12,
-                "velocity": 1,
-                "rotates": true
+            "Fuseball": {
+                "quantity": 3,
+                "velocity": 0.1
             }
         },
         "world": {

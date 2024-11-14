@@ -176,10 +176,10 @@ class Blaster:
         self.bullets_reloading()
 
 
-        if is_key_down(KeyboardKey.KEY_RIGHT):
+        if is_key_down(KeyboardKey.KEY_LEFT):
             self.move_left(full_steps)
 
-        if is_key_down(KeyboardKey.KEY_LEFT):
+        if is_key_down(KeyboardKey.KEY_RIGHT):
             self.move_right(full_steps)
 
         if is_key_down(KeyboardKey.KEY_A):

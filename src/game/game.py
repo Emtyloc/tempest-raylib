@@ -8,6 +8,7 @@ from src.entities import Blaster
 from src.sounds import SoundManager
 from src.score import ScoreManager
 from src.utils import Vec2
+from src.utils.utils import is_input_start_pressed, is_input_right, is_input_left
 from pyray import *
 
 class GameState(IntEnum):
@@ -18,6 +19,7 @@ class GameState(IntEnum):
 class Game:
 
     def __init__(self, sound_manager: SoundManager) -> None:
+        self.last_move_time = 0
         self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
@@ -44,23 +46,33 @@ class Game:
 
         self.game_state = GameState.PLAYING
 
-
     def update_frame(self):
 
         match self.game_state:
             case GameState.START_SCREEN:
-                if is_key_pressed(KeyboardKey.KEY_ENTER):
+                if is_input_start_pressed():
                     self.goto_level_selection()
-                #TODO: start screen animations
+                # TODO: start screen animations
 
             case GameState.LEVEL_SELECTION:
-                if is_key_pressed(KeyboardKey.KEY_RIGHT) and self.selected_level < self.max_level:
+                self.last_move_time += get_frame_time()
+                if (
+                    is_input_right()
+                    and self.last_move_time > 0.2
+                    and self.selected_level < self.max_level
+                ):
+                    self.last_move_time = 0
                     self.selected_level += 1
                     play_sound(self.sound_manager.get_sound("blaster_move"))
-                elif is_key_pressed(KeyboardKey.KEY_LEFT) and self.selected_level > self.min_level:
+                elif (
+                    is_input_left()
+                    and self.last_move_time > 0.2
+                    and self.selected_level > self.min_level
+                ):
+                    self.last_move_time = 0
                     self.selected_level -= 1
                     play_sound(self.sound_manager.get_sound("blaster_move"))
-                elif is_key_pressed(KeyboardKey.KEY_ENTER):
+                elif is_input_start_pressed():
                     self.current_level = self.selected_level
                     self.select_level(self.current_level)
 

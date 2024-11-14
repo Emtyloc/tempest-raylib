@@ -5,6 +5,7 @@ from src.utils import Vec2
 from src.worlds import WorldData
 from src.sounds import SoundManager
 from .blaster_bullet import BlasterBullet
+from src.utils.utils import is_input_left, is_input_right, is_input_fire, is_input_zap_pressed
 
 
 class Blaster:
@@ -175,20 +176,19 @@ class Blaster:
         self.update_bullets_frame()
         self.bullets_reloading()
 
-
-        if is_key_down(KeyboardKey.KEY_LEFT):
+        if is_input_left():
             self.move_left(full_steps)
 
-        if is_key_down(KeyboardKey.KEY_RIGHT):
+        if is_input_right():
             self.move_right(full_steps)
 
-        if is_key_down(KeyboardKey.KEY_A):
+        if is_input_fire():
             if self.current_mag >= 0 and self.last_shoot_time >= self.time_btwn_shoots:
                 self.shoot()
                 self.current_mag -= 1
                 self.last_shoot_time = 0
-        
-        if is_key_pressed(KeyboardKey.KEY_SPACE):
+
+        if is_input_zap_pressed():
             if self.zapper_count > 0:
                 self.event_manager.notify(EventManager.Topics.SUPER_ZAPPER, {})
                 self.zapper_count -= 1

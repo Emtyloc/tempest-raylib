@@ -1,9 +1,15 @@
+# /// script
+# dependencies = [
+#     "cffi",
+#     "raylib"
+# ]
+# ///
 from pyray import *
 from raylib import ffi
 from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS
 from src.game import Game
 from src.sounds import SoundManager
-import os
+import os, platform, asyncio
 
 
 def init_gloom_shader() -> Shader:
@@ -31,15 +37,17 @@ def init_2d_camera() -> Camera2D:
     camera.zoom = 1.0
     return camera
 
-def main():
-    
+
+async def main():
+
     # Engine setup
     setup_window()
     camera = init_2d_camera()
     gloom_shader = init_gloom_shader()
     render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
-    init_audio_device()
+    if platform.system() != "Emscripten":  # audio does not work on current version of emscripten
+        init_audio_device()
 
     sound_volume = 0.7
     sound_manager = SoundManager(sound_volume)
@@ -72,6 +80,7 @@ def main():
 
         draw_fps(0, 0)
         end_drawing()
+        await asyncio.sleep(0)
 
     unload_shader(gloom_shader)
     unload_render_texture(render_texture)
@@ -82,4 +91,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

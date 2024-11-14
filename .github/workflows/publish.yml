@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - web-build
   workflow_dispatch:
 
 
@@ -30,17 +29,18 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          python3 -m pip install pygbag==0.9.2
+          sudo apt install ffmpeg
+          python3 -m pip install pygbag==0.9.2 black
 
       - name: Build the site
         run: |
-          python3 -m pygbag --PYBUILD 3.12 --ume_block 0 --template noctx.tmpl main.py
+          python3 -m pygbag --build --PYBUILD 3.12 --ume_block 0 --template noctx.tmpl main.py
 
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./build/web  # Path to your build output directory (e.g., 'dist' or 'public')
+          path: ./build/web
 
   deploy:
     needs: build

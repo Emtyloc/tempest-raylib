@@ -14,8 +14,9 @@ import os, platform, asyncio
 
 def init_gloom_shader() -> Shader:
     # Its important to use os.path with dirname(__file__) to make files reachables from .exe/.bin builds.
-    shader_path = os.path.join(os.path.dirname(__file__), "assets/shaders/glsl330/bloom.fs")
-    gloom_shader = load_shader("0", shader_path);
+    glsl_version = "300es" if platform.system() == "Emscripten" else "330"
+    shader_path = os.path.join(os.path.dirname(__file__), f"assets/shaders/glsl{glsl_version}/bloom.fs")
+    gloom_shader = load_shader("0", shader_path)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"size"), Vector2(SCREEN_WIDTH, SCREEN_HEIGHT) , ShaderUniformDataType.SHADER_UNIFORM_VEC2)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"samples"), ffi.new("float *", 11.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
     set_shader_value(gloom_shader, get_shader_location(gloom_shader,"quality"), ffi.new("float *", 1.0) , ShaderUniformDataType.SHADER_UNIFORM_FLOAT)
@@ -57,7 +58,9 @@ async def main():
 
     # Main game loop
     while not window_should_close():
-        
+        if is_key_pressed(KeyboardKey.KEY_F):
+            toggle_borderless_windowed()
+
         # Update game
         game.update_frame()
         
@@ -74,8 +77,16 @@ async def main():
         end_mode_2d()
         end_texture_mode()
 
-        begin_shader_mode(gloom_shader) 
-        draw_texture_rec(render_texture.texture, Rectangle(0,0, render_texture.texture.width, -render_texture.texture.height),Vector2(0,0), WHITE)
+        begin_shader_mode(gloom_shader)
+        aspect = get_screen_height() / render_texture.texture.height
+        draw_texture_pro(
+            render_texture.texture,
+            Rectangle(0, 0, render_texture.texture.width, -render_texture.texture.height),
+            Rectangle(0, 0, render_texture.texture.width * aspect, get_screen_height()),
+            Vector2(0, 0),
+            0,
+            WHITE,
+        )
         end_shader_mode()
 
         draw_fps(0, 0)

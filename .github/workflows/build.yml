@@ -34,7 +34,7 @@ jobs:
           nuitka-version: main
           script-name: main.py
           windows-icon-from-ico: icon.ico
-          onefile: true
+          mode: onefile
           include-data-dir: assets=assets
           include-package-data: src.levels
           include-data-files: icon.png=icon.png

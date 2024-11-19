@@ -5,10 +5,10 @@ import json
 from src.levels import Level
 from src.shared import EventManager, SCREEN_CENTER, TempestColors, SCREEN_WIDTH
 from src.entities import Blaster
+from src.shared.input_manager import InputManager
 from src.sounds import SoundManager
 from src.score import ScoreManager
 from src.utils import Vec2
-from src.utils.utils import is_input_start_pressed, is_input_right, is_input_left
 from pyray import *
 
 class GameState(IntEnum):
@@ -18,11 +18,12 @@ class GameState(IntEnum):
 
 class Game:
 
-    def __init__(self, sound_manager: SoundManager) -> None:
+    def __init__(self, sound_manager: SoundManager, input_manager: InputManager) -> None:
         self.last_move_time = 0
         self.sound_manager = sound_manager
         self.game_state = GameState.START_SCREEN
         self.event_manager = EventManager()
+        self.input_manager = input_manager
         self.score_manager = ScoreManager(self.event_manager)
         self.current_level = 1
         self.max_level = 16  # Set maximum number of levels
@@ -42,7 +43,7 @@ class Game:
         self.level.load_level_data(level_number)
 
         # Init Player
-        self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager)
+        self.blaster = Blaster(self.level.world, self.event_manager, self.sound_manager, self.input_manager)
 
         self.game_state = GameState.PLAYING
 
@@ -50,14 +51,14 @@ class Game:
 
         match self.game_state:
             case GameState.START_SCREEN:
-                if is_input_start_pressed():
+                if self.input_manager.is_input_start_pressed():
                     self.goto_level_selection()
                 # TODO: start screen animations
 
             case GameState.LEVEL_SELECTION:
                 self.last_move_time += get_frame_time()
                 if (
-                    is_input_right()
+                    self.input_manager.is_input_right()
                     and self.last_move_time > 0.2
                     and self.selected_level < self.max_level
                 ):
@@ -65,14 +66,14 @@ class Game:
                     self.selected_level += 1
                     play_sound(self.sound_manager.get_sound("blaster_move"))
                 elif (
-                    is_input_left()
+                    self.input_manager.is_input_left()
                     and self.last_move_time > 0.2
                     and self.selected_level > self.min_level
                 ):
                     self.last_move_time = 0
                     self.selected_level -= 1
                     play_sound(self.sound_manager.get_sound("blaster_move"))
-                elif is_input_start_pressed():
+                elif self.input_manager.is_input_start_pressed():
                     self.current_level = self.selected_level
                     self.select_level(self.current_level)
 

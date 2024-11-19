@@ -38,14 +38,62 @@ def init_2d_camera() -> Camera2D:
     camera.zoom = 1.0
     return camera
 
+class Renderer:
+    def __init__(self, game):
+        self.game = game
+        self.camera = init_2d_camera()
+        self.gloom_shader = init_gloom_shader()
+        self.render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
+        set_texture_filter(self.render_texture.texture, TextureFilter.TEXTURE_FILTER_BILINEAR)
+        self.fullscreen = False
+        self.rt_origin = Vector2(0,0)
+        self.rt_source = Rectangle()
+        self.rt_dest = Rectangle()
+        self.resize()
+
+    def resize(self):
+        aspect = get_screen_height() / self.render_texture.texture.height
+        self.rt_source = Rectangle(0, 0, self.render_texture.texture.width, -self.render_texture.texture.height)
+        self.rt_dest = Rectangle((get_screen_width()-self.render_texture.texture.width*aspect)/2, 0, self.render_texture.texture.width * aspect, get_screen_height())
+
+
+    def destroy(self):
+        unload_render_texture(self.render_texture)
+        unload_shader(self.gloom_shader)
+
+    def toggle_fullscreen(self):
+        self.fullscreen = not self.fullscreen
+        toggle_borderless_windowed()
+        begin_drawing()
+        end_drawing()
+        self.resize()
+
+    def render_frame(self):
+        begin_drawing()
+        clear_background(BLACK)
+        begin_texture_mode(self.render_texture)
+        clear_background(BLACK)
+        begin_mode_2d(self.camera)
+
+        # Draw game
+        self.game.draw_frame()
+
+        end_mode_2d()
+        end_texture_mode()
+
+        begin_shader_mode(self.gloom_shader)
+        draw_texture_pro(self.render_texture.texture, self.rt_source, self.rt_dest, self.rt_origin,0,WHITE)
+
+        end_shader_mode()
+
+        draw_fps(0, 0)
+        end_drawing()
+
 
 async def main():
 
     # Engine setup
     setup_window()
-    camera = init_2d_camera()
-    gloom_shader = init_gloom_shader()
-    render_texture = load_render_texture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
     if platform.system() != "Emscripten":  # audio does not work on current version of emscripten
         init_audio_device()
@@ -56,45 +104,20 @@ async def main():
 
     game = Game(sound_manager)
 
+    renderer = Renderer(game)
+
     # Main game loop
     while not window_should_close():
-        if is_key_pressed(KeyboardKey.KEY_F):
-            toggle_borderless_windowed()
-
+        if is_key_pressed(KeyboardKey.KEY_F) or get_touch_point_count()>0 and not renderer.fullscreen:
+            renderer.toggle_fullscreen()
         # Update game
         game.update_frame()
-        
-        begin_drawing()
-
-        begin_texture_mode(render_texture)
-        
-        clear_background(BLACK)
-        begin_mode_2d(camera)
-        
-        # Draw game
-        game.draw_frame()
-
-        end_mode_2d()
-        end_texture_mode()
-
-        begin_shader_mode(gloom_shader)
-        aspect = get_screen_height() / render_texture.texture.height
-        draw_texture_pro(
-            render_texture.texture,
-            Rectangle(0, 0, render_texture.texture.width, -render_texture.texture.height),
-            Rectangle(0, 0, render_texture.texture.width * aspect, get_screen_height()),
-            Vector2(0, 0),
-            0,
-            WHITE,
-        )
-        end_shader_mode()
-
-        draw_fps(0, 0)
-        end_drawing()
+        renderer.resize() # shouldn't be necessary every frame but Linux GLFW seems to need it!
+        renderer.render_frame()
         await asyncio.sleep(0)
 
-    unload_shader(gloom_shader)
-    unload_render_texture(render_texture)
+
+    renderer.destroy()
     unload_image(icon)
     sound_manager.unload_sounds()
     close_audio_device()

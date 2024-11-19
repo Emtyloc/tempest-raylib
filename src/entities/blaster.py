@@ -5,7 +5,7 @@ from src.utils import Vec2
 from src.worlds import WorldData
 from src.sounds import SoundManager
 from .blaster_bullet import BlasterBullet
-from src.utils.utils import is_input_left, is_input_right, is_input_fire, is_input_zap_pressed
+from ..shared.input_manager import InputManager
 
 
 class Blaster:
@@ -36,10 +36,11 @@ class Blaster:
                 return Blaster.Position(prev_idx)
             return Blaster.Position.RIGHT
 
-    def __init__(self, world: WorldData, event_manager: EventManager, sound_manager: SoundManager) -> None:
+    def __init__(self, world: WorldData, event_manager: EventManager, sound_manager: SoundManager, input_manager: InputManager) -> None:
         self._init_defaults()
         self.event_manager = event_manager
         self.sound_manager = sound_manager
+        self.input_manager = input_manager
         self.world = world
         self.border_idx = world.start_idx
         event_manager.notify(EventManager.Topics.BLASTER_BORDER_UPDATE, {"border_idx": self.border_idx})
@@ -176,19 +177,22 @@ class Blaster:
         self.update_bullets_frame()
         self.bullets_reloading()
 
-        if is_input_left():
+        if self.input_manager.get_combined_axis_movement() != 0.0:
+            self.velocity = 60 * abs(self.input_manager.get_touch_virtual_axis_movement())
+
+        if self.input_manager.is_input_left():
             self.move_left(full_steps)
 
-        if is_input_right():
+        if self.input_manager.is_input_right():
             self.move_right(full_steps)
 
-        if is_input_fire():
+        if self.input_manager.is_input_fire():
             if self.current_mag >= 0 and self.last_shoot_time >= self.time_btwn_shoots:
                 self.shoot()
                 self.current_mag -= 1
                 self.last_shoot_time = 0
 
-        if is_input_zap_pressed():
+        if self.input_manager.is_input_zap_pressed():
             if self.zapper_count > 0:
                 self.event_manager.notify(EventManager.Topics.SUPER_ZAPPER, {})
                 self.zapper_count -= 1

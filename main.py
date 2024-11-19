@@ -8,6 +8,7 @@ from pyray import *
 from raylib import ffi
 from src.shared import TempestColors, SCREEN_CENTER, SCREEN_HEIGHT, SCREEN_WIDTH, TARGET_FPS
 from src.game import Game
+from src.shared.input_manager import InputManager
 from src.sounds import SoundManager
 import os, platform, asyncio
 
@@ -102,7 +103,9 @@ async def main():
     sound_manager = SoundManager(sound_volume)
     sound_manager.load_sounds()
 
-    game = Game(sound_manager)
+    input_manager = InputManager()
+
+    game = Game(sound_manager, input_manager)
 
     renderer = Renderer(game)
 
@@ -112,6 +115,7 @@ async def main():
             renderer.toggle_fullscreen()
         # Update game
         game.update_frame()
+        input_manager.update_touch_input()
         renderer.resize() # shouldn't be necessary every frame but Linux GLFW seems to need it!
         renderer.render_frame()
         await asyncio.sleep(0)

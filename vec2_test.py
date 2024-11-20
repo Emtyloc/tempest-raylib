@@ -87,13 +87,13 @@ class Vec2(list):
     
     def __truediv__(self, other):
         if isinstance(other, Vec2):
-            res = vector_2divide(self, other)
+            res = vector2_divide(self, other)
             return self.to_Vec2(res)
         return Vec2(self.x / other, self.y / other)
     
     def __itruediv__(self, other):
         if isinstance(other, Vec2):
-            res = vector_2divide(self, other)
+            res = vector2_divide(self, other)
         else:
             res = vector2_scale(self, 1/other)
         self.x = res.x
@@ -123,13 +123,13 @@ class Vec2(list):
         return self.to_Vec2(res)
     
     def distance(self, vec2):
-        return vector_2distance(self, vec2)
+        return vector2_distance(self, vec2)
     
     def distance_sqr(self, vec2) -> float:
-        return vector_2distance_sqr(self, vec2)
+        return vector2_distance_sqr(self, vec2)
     
     def dot_product(self, vec2) -> float:
-        return vector_2dot_product(self, vec2)
+        return vector2_dot_product(self, vec2)
     
     def invert(self):
         res = vector2_invert(self)

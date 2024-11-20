@@ -178,7 +178,7 @@ class Blaster:
         self.bullets_reloading()
 
         if self.input_manager.get_combined_axis_movement() != 0.0:
-            self.velocity = 60 * abs(self.input_manager.get_touch_virtual_axis_movement())
+            self.velocity = 60 * abs(self.input_manager.get_combined_axis_movement())
 
         if self.input_manager.is_input_left():
             self.move_left(full_steps)

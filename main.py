@@ -26,6 +26,8 @@ def init_gloom_shader() -> Shader:
 icon = load_image(os.path.join(os.path.dirname(__file__), "icon.png"))
 def setup_window():
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, "Tempest Raylib")
+    if platform.system() == "Emscripten":
+        platform.window.window_resize()
     set_window_icon(icon)
     set_target_fps(TARGET_FPS)
 
@@ -110,7 +112,7 @@ async def main():
 
     # Main game loop
     while not window_should_close():
-        if is_key_pressed(KeyboardKey.KEY_F) or get_touch_point_count()>0 and not renderer.fullscreen:
+        if is_key_pressed(KeyboardKey.KEY_F):
             renderer.toggle_fullscreen()
         # Update game
         game.update_frame()

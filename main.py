@@ -96,8 +96,7 @@ async def main():
     # Engine setup
     setup_window()
 
-    if platform.system() != "Emscripten":  # audio does not work on current version of emscripten
-        init_audio_device()
+    init_audio_device()
 
     sound_volume = 0.7
     sound_manager = SoundManager(sound_volume)

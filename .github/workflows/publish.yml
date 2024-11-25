@@ -34,9 +34,9 @@ jobs:
 
       - name: Build the site
         run: |
-          wget https://github.com/electronstudio/pygbag-raylib/releases/download/v5.5.0.0/raylib-5.5.0.0-cp310-abi3-wasm32_bi_emscripten.whl
-          unzip raylib-5.5.0.0-cp310-abi3-wasm32_bi_emscripten.whl
-          rm raylib-5.5.0.0-cp310-abi3-wasm32_bi_emscripten.whl
+          wget https://github.com/electronstudio/pygbag-raylib/releases/download/v5.5.0.1/raylib-5.5.0.1-cp310-abi3-wasm32_bi_emscripten.whl
+          unzip raylib-5.5.0.1-cp310-abi3-wasm32_bi_emscripten.whl
+          rm raylib-5.5.0.1-cp310-abi3-wasm32_bi_emscripten.whl
           python3 -m pygbag --build --PYBUILD 3.12 --ume_block 0 --template noctx.tmpl --git main.py 
 
       - name: Upload artifact

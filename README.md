@@ -9,8 +9,8 @@ Basic instructions 📖:
 - Enter: Select ✅
 - Arrows: Move ↔️
 - A: Shoot 🔫
-
-[web version](https://emtyloc.github.io/tempest-raylib/)
+## Web preview - Click to play
+[![web version](https://github.com/user-attachments/assets/c2540da4-d1d9-4731-8e7c-dcb8dfb9db54)](https://emtyloc.github.io/tempest-raylib/)
 
 # Useful links
 
